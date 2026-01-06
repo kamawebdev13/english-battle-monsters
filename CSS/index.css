@@ -1,0 +1,357 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Fredoka', sans-serif;
+}
+
+body,
+html {
+
+    overflow: visible;
+    margin: 0 auto;
+    background-color: var(--c-active-four);
+    color: white;
+}
+
+ul,
+li {
+    list-style: none;
+
+
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/*END OF RESET*/
+
+:root {
+
+    /*FONTS*/
+    --f-heading-extra-xl: 700 6em 'Fredoka', sans-serif;
+    --f-heading-xxl: 700 4em 'Fredoka', sans-serif;
+    --f-heading-xl: 700 3em 'Fredoka', sans-serif;
+    --f-heading-lg: 600 2.5em 'Fredoka', sans-serif;
+    --f-heading-md: 600 2em 'Fredoka', sans-serif;
+    --f-heading-sm: 500 1.5em 'Fredoka', sans-serif;
+    --f-heading-xs: 400 1em 'Fredoka', sans-serif;
+    --f-body: 300 .875em 'Fredoka', sans-serif;
+    --f-link-lg: 500 2.5em 'Fredoka', sans-serif;
+    --f-link-md: 500 1.2em 'Fredoka', sans-serif;
+    --f-link: 500 1em 'Fredoka', sans-serif;
+    --f-link-xs: 400 .75em 'Fredoka', sans-serif;
+
+    /*COLORS*/
+
+    --c-text: #211832;
+    --c-text-two: #758A93;
+    --c-active-one: #5A9CB5;
+    --c-active-two: #FACE68;
+    --c-active-three: #FA6868;
+    --c-active-four: #BADFDB;
+    --c-active-five: #FFCDC9;
+    --c-active-six: #CD5656;
+    --c-hover: #FEEAC9;
+    --c-border: #37353E;
+    --c-background: #8CA9FF;
+    --c-background-lighter: #FCF8F8;
+    --c-background-darker: #8967B3;
+
+    /*SPACING*/
+    --s-xxl: 8rem;
+    --s-xl: 4rem;
+    --s-lg: 3rem;
+    --s-md: 2rem;
+    --s-mmd: 1.25rem;
+    --s-sm: 1rem;
+    --s-xs: .5625rem;
+    --s-xxs: .2813rem;
+
+    /*sIZES*/
+    --mw-xl: 75rem;
+    --mw-lg: 60.625rem;
+    --mw-md: 40rem;
+    --mw-sm: 31.25rem
+        /*RADIUS*/
+        --r-xl: 6rem;
+    --r-md: 3rem;
+    --r-mmd: 1.5rem;
+    --r-sm: .3125rem;
+
+}
+
+/*------------------*/
+
+
+/*ELEMENTS*/
+
+.icon-outline {
+    /*EFECTO TEXT-SHADOW TOMADO DEL GIT https://owumaro.github.io/text-stroke-generator/*/
+    text-shadow: rgb(85, 88, 121) 2px 0px 0px, rgb(85, 88, 121) 1.75517px 0.958851px 0px,
+        rgb(85, 88, 121) 1.0806px 1.68294px 0px, rgb(85, 88, 121) 0.141474px 1.99499px 0px,
+        rgb(85, 88, 121) -0.832294px 1.81859px 0px, rgb(85, 88, 121) -1.60229px 1.19694px 0px,
+        rgb(85, 88, 121) -1.97998px 0.28224px 0px, rgb(85, 88, 121) -1.87291px -0.701566px 0px,
+        rgb(85, 88, 121) -1.30729px -1.5136px 0px, rgb(85, 88, 121) -0.421592px -1.95506px 0px,
+        rgb(85, 88, 121) 0.567324px -1.91785px 0px, rgb(85, 88, 121) 1.41734px -1.41108px 0px,
+        rgb(85, 88, 121) 1.92034px -0.558831px 0px;
+}
+
+.block-column {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.block-row {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+
+}
+
+
+.container {
+    display: flex;
+    max-width: var(--mw-lg);
+    margin: 0 auto;
+    gap: 1rem;
+}
+
+
+/*TEXTS*/
+
+.text-h1 {
+    font: var(--f-heading-xl);
+}
+
+.text-h2 {
+    font: var(--f-heading-lg)
+}
+
+.text-h3 {
+    font: var(--f-heading-md)
+}
+
+.text-h4 {
+    font: var(--f-heading-sm);
+}
+
+.text-body {
+    font: var(--f-heading-xs)
+}
+
+.text-link {
+    font: var(--f-link)
+}
+
+.text-link-smaller {
+    font: var(--f-link-xs)
+}
+
+/*BUTTONS*/
+
+.btn--rounded {
+    font: var(--f-link);
+    background-color: var(--c-active-one);
+    color: var(--c-text);
+    padding: var(--s-xs) var(--s-md);
+    border-radius: var(--r-md);
+    box-shadow: 6px 6px 0 rgba(85, 88, 121, 0.6);
+    display: inline-block;
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+
+    &:hover {
+        transform: scale(1.05) translateY(-2px);
+    }
+}
+
+/*END OF ELEMENTS*/
+
+/*HEADER*/
+
+.nav__container {
+
+    & .nav__block {
+        padding: var(--s-sm) clamp(1rem, 5vw, var(--s-md));
+        background-color: white;
+        width: 100%;
+        
+
+        & .nav__main-links {
+
+            & a:hover {
+                color: var(--c-active-three);
+
+                transition: color 0.3s ease;
+            }
+
+            & .text-link {
+                font: var(--f-link-md);
+                color: var(--c-text-two);
+            }
+
+        }
+
+        & .block-row {
+
+            gap: clamp(1rem, 8vw, 5rem);
+        }
+
+        & .btn--rounded {
+            margin-left: auto;
+
+            box-shadow: 2px 2px 0 rgba(85, 88, 121, 0.6);
+            color: white;
+            white-space: nowrap;
+            font-size: calc(0.85rem + 0.3vw);
+            padding: 0.6em calc(1.2em + 0.5vw);
+
+            &:hover {
+                background-color: var(--c-hover);
+            }
+
+
+        }
+    }
+}
+
+/*END OF HEADER*/
+
+/*HERO*/
+
+.hero {
+
+    & .hero__container {
+        padding: var(--s-lg) clamp(1rem, 5vw, var(--s-md));
+        background: url('/img-index/hero-background.webp');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    
+        height: 37.5rem;
+        width: 60.625rem;
+       
+
+        & .hero__block {
+            width: 100%;
+
+            & .hero__title {
+                max-width: 56.25rem;
+                text-align: center;
+
+                & .hero__logo {
+                    width: 55rem;
+                    height: auto;
+                    display: block;
+                    margin: 0 auto;
+                }
+
+            }
+
+            & .block-column {
+                gap: 1rem;
+
+            }
+
+            & .text-h1 {
+                margin-top: 20rem;
+                font: var(--f-heading-md);
+                text-transform: uppercase;
+
+
+            }
+
+        }
+    }
+
+}
+
+/*HERO*/
+
+.banner-section {
+
+    & .banner__container {
+        background-color: var(--c-active-one);
+        padding: var(--s-md);
+
+
+        & .banner__block {
+
+            .banner__info {
+                flex: 1 1 25rem;
+
+                .text-h3 {
+                    padding: var(--s-sm);
+                    color: var(--c-active-five);
+                    text-align: left;
+                    width: 80%;
+                }
+
+                .text-body {
+                    text-align: justify;
+                    padding: 0 var(--s-sm);
+                  
+                }
+
+            }
+
+            .banner__image {
+                flex: 0 1 22rem;
+                border-radius: var(--r-mmd);
+
+                & img {
+                    width: 100%;
+                    height: auto;
+                    max-height: 21.875rem;
+                    object-fit: cover;
+                    border-radius: var(--r-mmd);
+                    display: block;
+
+                }
+
+                & .block-row {
+                    flex-wrap: wrap;
+                    gap: var(--s-md);
+
+
+                }
+
+
+            }
+
+        }
+
+
+
+    }
+
+}
+
+/*responsive*/
+
+@media (max-width: 768px) {
+
+    .nav__container {
+
+        & .nav__block {
+
+            & .nav__main-links {
+
+                display: none;
+
+            }
+
+        }
+    }
+}
