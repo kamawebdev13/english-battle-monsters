@@ -5,7 +5,6 @@
 /*STATUS DEL JUEGO*/
 let currentLevel = 1
 let gameStatus = "wait"
-let status = ["wait", "level-start", "question", "transition", "ended"]/*solo referencia*/
 let isClickable = true
 let scores = []
 const STORAGE_KEY = "prepoBattleScores"
@@ -183,8 +182,6 @@ let gameAreaBlock
 let containerTopQuestions
 let timeBarBlock
 let levelOneEnded = false
-
-
 
 /*BARRA DEL TIEMPO*/
 let timeCounter
@@ -519,6 +516,7 @@ const initGame = () => {
       /*AGREGAMOS BLOQUE MONSTRUOS A CONTAINER BOTTOM*/
       containerBottomMonsters.appendChild(prepoMonster)
       containerBottomMonsters.appendChild(meanerPrepoMonster)
+
       /*ACTUALIZACION DE LOS PUNTOS DE LOS MONSTRUOS EN EL ELEMENTO INFO*/
       prepoPointsText = prepoMonster.querySelector("#prepo-points")
       meanerPrepoPointsText = meanerPrepoMonster.querySelector("#meaner-points")
@@ -573,7 +571,7 @@ const initGame = () => {
       containerTopQuestions.style.transform = "translateY(6px)";
 
       containerTopQuestions.innerHTML = "" /*LIMPIAMOS CONTENEDOR TOP*/
-
+      /*DESBLOQUEO DE CLICKS*/
       hasAnswered = false
       isClickable = true
 
@@ -609,7 +607,7 @@ const initGame = () => {
         btn.addEventListener("click", () => {
           if (gameStatus !== "question") return
           if (hasAnswered) return
-          /*BLOQUE DE CLICKS*/
+          /*BLOQUEO DE CLICKS*/
           hasAnswered = true
           isClickable = false
           buttonsContainer.style.pointerEvents = "none"
@@ -666,6 +664,7 @@ const initGame = () => {
 
             questionParagraph.textContent = correctAnswerText
             questionParagraph.classList.add("answer-wrong")
+
             /* CAMBIAMOS COLOR FONDO BOTÓN CORRECTO E INCORRECTO*/
             const allButtons = buttonsContainer.querySelectorAll(".btn--rounded")
 
@@ -681,9 +680,9 @@ const initGame = () => {
               }
             })
 
-
             updatePrepoState("sad")
             updateMeanerState("happy")
+
             /*SONIDO DE INCORRECT*/
             soundWrong.currentTime = 0
             soundWrong.play()
@@ -878,7 +877,7 @@ const initGame = () => {
               questionsRound()
             } else {
               gameStatus = "ended"
-              endLevelOne() /*LALMADO DE FUNCION FIN DE NIVEL UNO*/
+              endLevelOne() /*LlAMADO DE FUNCION FIN DE NIVEL UNO*/
 
             }
           }, 1500)
@@ -945,6 +944,7 @@ const initGame = () => {
       }
 
       containerTopQuestions.appendChild(endBlock)
+      
       /*BOTON DEL PROXIMO NIVEL*/
       const nextBtn = endBlock.querySelector("#next-level")
       nextBtn.addEventListener("click", () => {
