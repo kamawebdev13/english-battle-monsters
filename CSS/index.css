@@ -34,8 +34,8 @@ a {
 
     /*FONTS*/
     --f-heading-extra-xl: 700 6em 'Fredoka', sans-serif;
-    --f-heading-xxl: 700 4em 'Fredoka', sans-serif;
-    --f-heading-xl: 700 3em 'Fredoka', sans-serif;
+    --f-heading-xxl: 700 5em 'Fredoka', sans-serif;
+    --f-heading-xl: 700 4em 'Fredoka', sans-serif;
     --f-heading-lg: 600 2.5em 'Fredoka', sans-serif;
     --f-heading-md: 600 2em 'Fredoka', sans-serif;
     --f-heading-sm: 500 1.5em 'Fredoka', sans-serif;
@@ -87,7 +87,6 @@ a {
 
 /*------------------*/
 
-
 /*ELEMENTS*/
 
 .icon-outline {
@@ -119,14 +118,12 @@ a {
 
 }
 
-
 .container {
     display: flex;
     max-width: var(--mw-lg);
     margin: 0 auto;
     gap: 1rem;
 }
-
 
 /*TEXTS*/
 
@@ -234,7 +231,7 @@ a {
 
     & .hero__container {
         padding: var(--s-lg) clamp(1rem, 5vw, var(--s-md));
-        background: url('/img-index/hero-background.webp');
+        background: url('/assests/images/hero-background.webp');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -277,7 +274,9 @@ a {
 
 }
 
-/*HERO*/
+/*END OF HERO*/
+
+/*BANNER*/
 
 .banner-section {
 
@@ -291,7 +290,7 @@ a {
             .banner__info {
                 flex: 1 1 25rem;
 
-                .text-h3 {
+                .text-h2 {
                     padding: var(--s-sm);
                     color: var(--c-active-five);
                     text-align: left;
@@ -301,6 +300,7 @@ a {
                 .text-body {
                     text-align: justify;
                     padding: 0 var(--s-sm);
+                    line-height: 2rem;
 
                 }
 
@@ -338,59 +338,113 @@ a {
 
 }
 
-/*END OF HERO*/
+/*END OF BANNER*/
 
-& .grid__section {
+
+
+/*GRID*/
+
+.grid__section {
     background-color: var(--c-active-one);
     padding: var(--s-md);
+    width: 100%;
 
     & .grid__block {
         display: flex;
         flex-direction: column;
         gap: 1rem;
+        width: 100%;
 
-        & h3 {}
+        & .grid__titles {
+            & h3 {
+                padding: 0 var(--s-sm);
+            }
+
+            & h4 {
+                padding: 0 var(--s-sm);
+            }
+
+            & span {
+                font: var(--f-link-md)
+            }
+
+        }
+
 
         & .grid__gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(21.875rem, 1fr));
-            grid-auto-rows: 1fr;
-            gap: 6rem .625rem;
-            margin: var(--s-xl) auto;
-            padding: var(--s-lg) 0 0 0;
+            grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+            align-items: start;
+            gap: 2rem;
+            margin: var(--s-md) auto;
+            width: 100%;
 
             & .grid__card {
-
-                max-width: 23rem;
-                width: 100%;
-                height: auto;
+                background-color: var(--c-active-four);
+                border-radius: var(--r-md);
+                overflow: hidden;
 
                 display: flex;
                 flex-direction: column;
-                background-color: var(--c-active-one);
-                border-radius: var(--r-md);
-                overflow: visible;
+                height: auto;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
 
+                &:hover {
+                    transform: translateY(-5px);
+                    cursor: pointer;
+                    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+                    z-index: 10;
 
-                & .card__image {
-
-                    min-height: 8.75rem;
-
-                    & img {
-                        width: 100%;
-                        height: auto;
-                        max-height: 21.875rem;
-                        object-fit: cover;
-                        border-radius: var(--r-mmd);
-                        display: block;
+                    & .card__image {
+                        img {
+                            transform: scale(1.05);
+                        }
                     }
 
+                    & .card__info {
+                        max-height: 250px;
+                        opacity: 1;
+                        padding: 1.5rem;
+                    }
 
                 }
 
-                & h4 {}
+                & .card__image {
+                    width: 100%;
+                    height: 14rem;
+                    overflow: hidden;
+                    flex-shrink: 0;
 
-                & span {}
+                    & img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        border-radius: var(--r-mmd);
+                        display: block;
+                        transition: transform 0.5s ease;
+
+                    }
+
+                }
+            }
+
+            & .card__info {
+                max-height: 0;
+                opacity: 0;
+                padding: 0 1.5rem;
+
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+                color: var(--c-text);
+                overflow: hidden;
+                transition: max-height 0.4s ease, opacity 0.4s ease, padding 0.4s ease;
+
+                & h4,
+                & span {
+                    margin: 0;
+                }
 
             }
 
@@ -399,8 +453,6 @@ a {
     }
 
 }
-
-
 
 
 

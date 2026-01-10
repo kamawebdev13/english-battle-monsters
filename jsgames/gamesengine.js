@@ -1,6 +1,7 @@
 
-
 /*VARIABLES GENERAL DEL JUEGO*/
+
+
 
 /*STATUS DEL JUEGO*/
 let currentLevel = 1
