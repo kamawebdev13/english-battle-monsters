@@ -1,1125 +1,652 @@
 
-/*VARIABLES GENERAL DEL JUEGO*/
+/*ESTE ES EL MOTOR DEL JUEGO  Y SE CARGA EN LA PAGINA PRINCIPAL GAMES, ESTE A SU VEZ DESCARGARA LAS PLANTILLAS CONFIG.JS*/
 
+/*VARIABLES GLOBALES DEL JUEGO*/
 
-
-/*STATUS DEL JUEGO*/
-let currentLevel = 1
-let gameStatus = "wait"
-let isClickable = true
-let scores = []
-const STORAGE_KEY = "prepoBattleScores"
-
-/* VARIABLE ARRAY OBJETO CON LAS PREGUNTAS Y DATOS COMPLEMENTARIOS DE NIVEL UNO*/
-const questionsLevelOne = [
-  {
-    src: "prepositions-battles/images/questions/office-coffee-interior-design__01.webp",
-    alt: "office-coffee-interior-design",
-    question: "The book is ___ the table.",
-    options: ["in", "on", "at"],
-    correct: "on",
-    sentence: "The book is on the table."
-
+/*ESTATUS DEL JUEGO*/
+let gameState = {
+  level: 1,
+  status: "wait", /* "wait", "level-start", "question", "ended"*/
+  questionIndex: 0,
+  activeQuestions: [],
+  timerInterval: null,
+  timeLeft: 0,
+  scores: {
+    player: { points: 0, growth: 0 },
+    enemy: { points: 0, growth: 0 }
   },
-  {
-    src: "prepositions-battles/images/questions/woman-walking-in-Madrid__02.webp",
-    alt: "woman-walking-in-Madrid",
-    question: "She lives ___ Madrid.",
-    options: ["in", "on", "at"],
-    correct: "in",
-    sentence: "She lives in Madrid."
-  },
-  {
-    src: "prepositions-battles/images/questions/woman-checking-her-watch__03.webp",
-    alt: "woman-checking-her-watch",
-    question: "We meet ___ 5 o'clock.",
-    options: ["in", "on", "at"],
-    correct: "at",
-    sentence: "We meet at 5 o'clock."
-  },
-  {
-    src: "prepositions-battles/images/questions/cat-sitting-in-a-box__04.webp",
-    alt: "cat-sitting-in-a-box",
-    question: "The cat is ___ the box.",
-    options: ["in", "on", "into"],
-    correct: "in",
-    sentence: "The cat is in the box"
-
-  },
-  {
-    src: "prepositions-battles/images/questions/man-putting-his-phone-into-his-pocket__05.webp",
-    alt: "man-putting-his-phone-into-his-pocket",
-    question: "He put the phone ___ his pocket.",
-    options: ["in", "into", "on"],
-    correct: "into",
-    sentence: "He put the phone into his pocket"
-
-  }
-]
-
-const questionsLevelTwo = [
-  {
-    src: "prepositions-battles/images/questions/level2-question-01.webp",
-    alt: "people-waiting-bus-stop",
-    question: "They are waiting ___ the bus stop.",
-    options: ["at", "in", "on"],
-    correct: "at",
-    sentence: "They are waiting at the bus stop."
-  },
-  {
-    src: "prepositions-battles/images/questions/level2-question-02.webp",
-    alt: "keys-table-morning",
-    question: "I left my keys ___ the table this morning.",
-    options: ["on", "in", "at"],
-    correct: "on",
-    sentence: "I left my keys on the table this morning."
-  },
-  {
-    src: "prepositions-battles/images/questions/level2-question-03.webp",
-    alt: "man-arriving-airport",
-    question: "He arrived ___ the airport early.",
-    options: ["at", "in", "to"],
-    correct: "at",
-    sentence: "He arrived at the airport early."
-  },
-  {
-    src: "prepositions-battles/images/questions/level2-question-04.webp",
-    alt: "children-playing-garden",
-    question: "The children are playing ___ the garden.",
-    options: ["in", "at", "on"],
-    correct: "in",
-    sentence: "The children are playing in the garden."
-  },
-  {
-    src: "prepositions-battles/images/questions/level2-question-05.webp",
-    alt: "picture-wall-living-room",
-    question: "There is a picture hanging ___ the wall.",
-    options: ["on", "in", "at"],
-    correct: "on",
-    sentence: "There is a picture hanging on the wall."
-  }
-]
-/*VARIABLES CONFIGURACION DE NIVELES UNO Y DOS*/
-const levelConfigs = {
-  1: {
-    questions: questionsLevelOne,
-    timePerQuestion: 10,
-    sentenceAudios: [
-      'prepositions-battles/sounds/questions/question-01.mp3',
-      'prepositions-battles/sounds/questions/question-02.mp3',
-      'prepositions-battles/sounds/questions/question-03.mp3',
-      'prepositions-battles/sounds/questions/question-04.mp3',
-      'prepositions-battles/sounds/questions/question-05.mp3'
-    ]
-  },
-  2: {
-    questions: questionsLevelTwo,
-    timePerQuestion: 8,
-    sentenceAudios: [
-      'prepositions-battles/sounds/questions/level2-question-01.mp3',
-      'prepositions-battles/sounds/questions/level2-question-02.mp3',
-      'prepositions-battles/sounds/questions/level2-question-03.mp3',
-      'prepositions-battles/sounds/questions/level2-question-04.mp3',
-      'prepositions-battles/sounds/questions/level2-question-05.mp3'
-    ]
+  /*CARGA DE AUDIOS*/
+  audio: {
+    sfx: {},  /*SONIDOS DE EFECTOS ESPECIALES*/
+    level: null,  /*SONIDOS DE CAMBIO DE NIVEL*/
+    sentence: null /*SONIDOS DE FRASES COMPLETAS*/
   }
 }
 
-/*CONTROL DE LAS PREGUNTAS*/
-let currentQuestionIndex = 0
-const totalQuestions = 5
-let currentQuestion
-let hasAnswered = false
-let correctAnswer
-let correctAnswerText
-let activeQuestions = []
+/*MODIFICACIONES DURANTE EL JUEGO Y SU DURACION*/
 
-/*FEEDBACK*/
-let showingFeedback = false
-const feedbackDuration = 1500
-let feedbackBlock
-
-/*CONTROL DEL TIEMPO*/
-let timePerQuestion = 10
-let timeLeft
-let timerInterval
-let timePercentage = 100
-
-/*MONSTERS PUNTOS*/
-let prepoPoints = 0
-let meanerPrepoPoints = 0
-
-/*MONSTERS PUNTOS TEXTOS*/
-let prepoPointsText
-let meanerPrepoPointsText
-
-/*MONSTERS CRECIMIENTO*/
-const BASE_SCALE = 1.5
-let prepoGrowth = 0
-let meanerGrowth = 0
-
-/*SONIDOS*/
-let soundPlayButton
-let soundLevelStart
-let soundCorrect
-let soundWrong
-let soundMonsterGrow
-let soundMonsterShrink
-let soundWinLevel
-let soundLoseLevel
-let soundCorrectSentence
-let soundTimerCountdown
-let sentenceAudioPaths
-let sentenceSounds
-let levelVoiceAudios = {}
-
-
-/*DOM VARIABLES*/
-let btnPlayGame
-let instructionsContainer
-let levelText
-let gameArea
-let gameAreaBlock
-let containerTopQuestions
-let timeBarBlock
-let levelOneEnded = false
-
-/*BARRA DEL TIEMPO*/
-let timeCounter
-let timeFiller
-
-/* MONSTERS INFO*/
-let prepoMonster
-let meanerPrepoMonster
-let prepoInfo
-let meanerPrepoInfo
-const prepoName = "Prepo"
-const meanerPrepoName = "Meaner"
-
-/*MONSTERS SPRITES*/
-let imagePrepoMonster
-let imageMeanerPrepoMonster
-
-/*DATOS DE PREGUNTAS*/
-let questionText
-let questionImage
-let questionImageAlt
-let answersButtons
-let questionBlock
-
-
-/*RESPONSIVE */
-let isMobile = false
-let isTablet = false
-
-/*FUNCIONES*/
-/*FUNCION CARGAR NIVELES*/
-const loadLevel = (levelNumber) => {
-  const config = levelConfigs[levelNumber]
-  if (!config) return
-
-  activeQuestions = config.questions
-  sentenceAudioPaths = config.sentenceAudios
-  timePerQuestion = config.timePerQuestion
-
-  sentenceSounds = sentenceAudioPaths.map(src => {
-    const audio = new Audio(src)
-    audio.preload = "auto"
-    audio.volume = 0.6
-    return audio
-  })
-
-  currentQuestionIndex = 0
+const MOD_CONFIG = {
+  baseScale: 1.5,
+  growthStep: 0.1,
+  maxGrowth: 0.5,
+  minGrowth: -0.15,
+  feedbackDuration: 1500
 }
 
-/*FUNCION PARA RESETEAR JUEGO*/
-const resetGameState = () => {
+/* ELEMENTOS DEL DOM*/
+let dom = {}
 
-  gameStatus = "wait"
-  prepoPoints = 0
-  meanerPrepoPoints = 0
-  prepoGrowth = 0
-  meanerGrowth = 0
-  hasAnswered = false
-  showingFeedback = false
-  currentQuestionIndex = 0
-  timeLeft = timePerQuestion
-  timePercentage = 100
-  isClickable = true
+/**ETAPA UNO DEL JUEGO**/
+/***FUNCION DE RUTEADO PARA QUE EL MOTOR ENCUENTRE LOS ARCHIVOS Y LOS CARGUE AL JUEGO****/
 
+const getPath = (type, filename) => {
+  const root = GameData.rootFolder
+
+  switch (type) {
+    case 'bg': return filename
+    case 'monster': return `${root}/images/monsters/${filename}`
+    case 'q_img': return `${root}/images/questions/${filename}`
+    case 'q_audio': return `${root}/sounds/questions/${filename}`
+    case 'sfx': return `${root}/sounds/actions/${filename}`
+    default: return filename
+  }
 }
-/*FIN FUNCION PARA RESETEAR JUEGO*/
+/*====END OF GETPATH()=====*/
 
-/*INICIO FUNCION PARA INICIAR JUEGO*/
+
+/***FUNCION DE INICIALIZACION DEL JUEGO***/
 
 const initGame = () => {
-  /*CAPTURA DEL DOM DE LOS ELEMENTOS DEL JUEGO*/
-  window.addEventListener('DOMContentLoaded', () => {
 
-    /*BUTTON PLAY*/
-    btnPlayGame = document.getElementById("btn-play-game")
+  console.log("GAME IS LOADING:", GameData.title)
 
-    /*GAME INSTRUCTIONS CONTAINER*/
-    instructionsContainer = document.getElementById("game-instructions")
+  /*SELECCION DE ELEMENTOS DEL DOM*/
+  dom = {
+    instructions: document.getElementById("game-instructions"),
+    gameArea: document.getElementById("game-area"),
+    gameBlock: document.getElementById("game-area__block"),
+    levelTextOverlay: document.getElementById("level-text"),
+    levelTextH3: document.getElementById("level-one-text"),
+    timerDisplay: document.getElementById("time"),
+    timerBar: document.getElementById("time-filler"),
+    btnPlay: document.getElementById("btn-play-game")
+  }
 
-    /*GAME LEVEL TEXT*/
-    levelText = document.getElementById("level-one-text")
+  /*CARGA DE GRAFICOS DEL JUEGO*/
+  document.body.style.backgroundImage = GameData.theme.backgroundImage
+  document.body.style.backgroundSize = "cover"
+  document.body.style.backgroundPosition = "center"
+  document.body.style.backgroundAttachment = "fixed"
 
-    /*GAME AREA */
-    gameArea = document.getElementById("game-area")
+  /*RENDERIZADO DE LAS INSTRUCCIONES DEL JUEGO*/
 
-    /*GAME AREA BLOCK*/
-    gameAreaBlock = document.getElementById("game-area__block")
+  const instrBlock = dom.instructions.querySelector(".instructions__block")
+  if (instrBlock) {
+    instrBlock.querySelector(".text-h1").innerText = GameData.title
+    instrBlock.querySelector(".text-h3").innerText = GameData.instructions.title
 
-    /*CONTADOR DE TIEMPO*/
-    timeCounter = document.getElementById("time")
-
-    /*BARRA INTERIOR DE CONTADOR TIEMPO*/
-    timeFiller = document.getElementById("time-filler")
-
-    /*BARRA VERTICAL DE CONTADOR TIEMPO*/
-    timeBarBlock = document.getElementById("time-bar__block")
-
-    /*FUNCION PARA ACTUALIZACION DE LOS PUNTOS DE LOS MONSTRUOS EN EL ELEMENTO INFO*/
-    const updateMonsterInfo = () => {
-
-      if (!prepoPointsText || !meanerPrepoPointsText) return
-      prepoPointsText.textContent = prepoPoints
-      meanerPrepoPointsText.textContent = meanerPrepoPoints
-    }
-    /*INICIALIZACION DE LOS ARCHIVOS DE SONIDOS DEL JUEGO*/
-
-    /*SONIDO DEL BOTON AL INCIAR EL JUEGO*/
-    soundPlayButton = new Audio('prepositions-battles/sounds/actions/play-button.mp3');
-    soundPlayButton.volume = 0.7
-    soundPlayButton.preload = "auto"
-
-    /*SONIDO AL INICIAR EL NIVEL*/
-    soundLevelStart = new Audio('prepositions-battles/sounds/actions/level-start.mp3');
-    soundLevelStart.volume = 0.7
-    soundLevelStart.preload = "auto"
-
-    /* SONIDO PREGUNTA CORRECTA*/
-    soundCorrect = new Audio('prepositions-battles/sounds/actions/correct.mp3');
-    soundCorrect.volume = 0.6;
-    soundCorrect.preload = "auto";
-    /* SONIDO PREGUNTA INCORRECTA*/
-    soundWrong = new Audio('prepositions-battles/sounds/actions/wrong.mp3');
-    soundWrong.volume = 0.6;
-    soundWrong.preload = "auto";
-    /*SONIDO DE MONSTRUO CRECE*/
-    soundMonsterGrow = new Audio('prepositions-battles/sounds/actions/monster-grow.mp3');
-    soundMonsterGrow.volume = 0.6;
-    soundMonsterGrow.preload = "auto";
-    /*SONIDO DE MONSTRUO SE REDUCE*/
-    soundMonsterShrink = new Audio('prepositions-battles/sounds/actions/monster-shrink.mp3');
-    soundMonsterShrink.volume = 0.6;
-    soundMonsterShrink.preload = "auto";
-    /*SONIDO NIVEL GANADOR*/
-    soundWinLevel = new Audio('prepositions-battles/sounds/actions/win-level.mp3');
-    soundWinLevel.volume = 0.7;
-    soundWinLevel.preload = "auto";
-    /*SONIDO NIVEL PERDEDOR*/
-    soundLoseLevel = new Audio('prepositions-battles/sounds/actions/lose-level.mp3');
-    soundLoseLevel.volume = 0.7;
-    soundLoseLevel.preload = "auto";
-    /*SONIDO DE LA BARRA DEL TIEMPO*/
-    soundTimerCountdown = new Audio('prepositions-battles/sounds/actions/timer-countdown.mp3');
-    soundTimerCountdown.volume = 0.5;
-    soundTimerCountdown.preload = "auto";
-    /*SONIDO DE RESPUESTAS CORRECTAS*/
-
-    sentenceAudioPaths = [
-      'prepositions-battles/sounds/questions/question-01.mp3',
-      'prepositions-battles/sounds/questions/question-02.mp3',
-      'prepositions-battles/sounds/questions/question-03.mp3',
-      'prepositions-battles/sounds/questions/question-04.mp3',
-      'prepositions-battles/sounds/questions/question-05.mp3'
-    ];
-
-    /*CARGARMOS SONIDO  DE RESPUESTAS CORRECTAS*/
-    sentenceSounds = sentenceAudioPaths.map(src => {
-      const audio = new Audio(src)
-      audio.preload = "auto"
-      audio.volume = 0.6
-      return audio
+    const ul = instrBlock.querySelector(".how-to-play")
+    ul.innerHTML = ""
+    GameData.instructions.steps.forEach(step => {
+      const li = document.createElement("li")
+      li.innerHTML = step
+      ul.appendChild(li)
     })
-    /*OBTENER SCORES DE PARTIDAS*/
-    const savedScores = localStorage.getItem(STORAGE_KEY)
 
-    if (savedScores) {
-      scores = JSON.parse(savedScores)
-    } else {
-      scores = []
-    }
-
-    resetGameState() /*LLAMADO DE RESETEO JUEGO*/
-
-    /*INTERACCION DE LOS ELEMENTOS DEL JUEGO*/
-
-    /*INICIO FUNCION PARA LLAMADO DEL BOTON PLAY*/
-    const handlePlayClick = async (e) => {
-      e.preventDefault()
-      if (gameStatus !== "wait") return
-
-      /* DESBLOQUEO DE AUDIO UNA SOLA VEZ*/
-      try {
-        await soundPlayButton.play()
-        soundPlayButton.pause()
-        soundPlayButton.currentTime = 0
-      } catch (e) {
-        console.warn("Audio no puede reproducirse", e)
-      }
-      /* INICIALIZACIÓN DE LEVEL AUDIOS UNA SOLA VEZ*/
-      levelVoiceAudios = {
-        1: new Audio('prepositions-battles/sounds/actions/level-start.mp3'),
-        2: new Audio('prepositions-battles/sounds/actions/level-two.mp3')
-      }
-
-      /*SONIDO DEL BOTON*/
-      soundPlayButton.currentTime = 0
-      soundPlayButton.play()
-
-      gameStatus = "level-start" //STATUS DEL JUEGO
-      isClickable = false // EVITA PROBLEMAS CON PUNTERO
-
-      /*OCULTA INSTRUCCIONES DEL JUEGO*/
-      hideInstructions()
-    }
-
-    btnPlayGame.addEventListener("click", handlePlayClick)/*ACTIVA BOTON Y FUNCION LLAMADO DEL BOTON PLAY*/
-    /*FIN FUNCION PARA LLAMADO DEL BOTON PLAY*/
-
-    /*INICIO FUNCION OCULTA INSTRUCCIONES DEL JUEGO*/
-    const hideInstructions = () => {
-
-      if (gameStatus !== "level-start") return
-
-      instructionsContainer.style.pointerEvents = "none" /*EVITA CUALQUIER EVENTO CON EL PUNTERO DEL RATON*/
-      instructionsContainer.classList.add("fade-out") /*OCULTA GRADUALMENTE LAS INSTRUCCIONES DEL JUEGO */
-
-      setTimeout(() => {
-        instructionsContainer.style.display = "none" /*TIEMPO DE ESPERA PARA OCULTAR LAS INSTRUCCIONES*/
-        showLevelText() /*LLAMADO DE LA SIG. FUNCION*/
-      }, 800)
-    }
-    /*FIN FUNCION OCULTA INSTRUCCIONES DEL JUEGO*/
-
-    /* INICIO FUNCION MUESTRA TEXTO Y SONIDO DEL NIVEL UNO Y DOS */
-
-    const showLevelText = () => {
-      if (gameStatus !== "level-start") return
-
-      levelText.style.pointerEvents = "none"
-      levelText.textContent = `LEVEL ${currentLevel}`
-      gameAreaBlock.classList.toggle("level-2", currentLevel === 2)
-      levelText.parentElement.classList.add("level-text--active")
-
-      const levelAudio = levelVoiceAudios[currentLevel]
-      if (levelAudio) {
-        levelAudio.currentTime = 0
-        levelAudio.play()
-      }
-
-      setTimeout(() => {
-        levelText.parentElement.classList.remove("level-text--active")
-      }, 1200)
-
-      setTimeout(() => {
-        loadLevel(currentLevel) /*CARGADO NIVEL UNO DEL JUEGO*/
-        startLevelOne()/*LLAMADO DE LA SIG FUNCION*/
-
-        gameStatus = "question"
-        questionsRound()
-
-      }, 1600)
-
-    }
-    /* FIN FUNCION MUESTRA TEXTO Y SONIDO DEL NIVEL UNO */
-
-    /* INICIO FUNCION COMIENZO NIVEL UNO*/
-
-    const startLevelOne = () => {
-
-      if (gameStatus !== "level-start") return
-      levelOneEnded = false
-
-      gameAreaBlock.innerHTML = "" /*LIMPIAR AREA DEL JUEGO*/
-
-      containerTopQuestions = document.createElement("div") /*CREA CONTAINER DE LAS PREGUNTAS*/
-      containerTopQuestions.classList.add("top", "visual") /*AGREGA ESTILO AL CONTAINER DE LAS PREGUNTAS*/
-
-      const containerBottomMonsters = document.createElement("div") /*CREA CONTAINER DE LOS MONSTRUOS*/
-      containerBottomMonsters.classList.add("bottom") /*AGREGA ESTILO AL CONTAINER DE LOS MONSTRUOS*/
-
-      /*AGREGAMOS LOS ELEMENTOS CONTAINERS PREGUNTAS Y MONSTRUOS EN EL GAME AREA BLOCK*/
-      gameAreaBlock.appendChild(containerTopQuestions)
-      gameAreaBlock.appendChild(containerBottomMonsters)
-
-      /*CREAMOS BLOQUE MONSTRUO DEL JUGADOR, CONTENEDOR PARA SU SPRITE Y SU ELEMENTO IMAGE*/
-      prepoMonster = document.createElement("div")
-      prepoMonster.classList.add("monster", "player")
-
-      const monsterVisual = document.createElement("div")
-      monsterVisual.classList.add("monster-visual")
-
-      imagePrepoMonster = document.createElement("img")
-      imagePrepoMonster.src = "prepositions-battles/images/monsters/webp/prepo-battle.webp"
-      imagePrepoMonster.alt = "Player monster"
-
-      /*CREAMOS BLOQUE MONSTRUO ENEMIGO Y CONTENEDOR PARA SU SPRITE Y SU ELEMENTO IMAGE*/
-      meanerPrepoMonster = document.createElement("div")
-      meanerPrepoMonster.classList.add("monster", "enemy")
-
-      const meanerVisual = document.createElement("div")
-      meanerVisual.classList.add("monster-visual")
-
-      imageMeanerPrepoMonster = document.createElement("img")
-      imageMeanerPrepoMonster.src = "prepositions-battles/images/monsters/webp/meanerprepo-battle.webp"
-      imageMeanerPrepoMonster.alt = "Enemy monster"
-      /*TAMAÑO INICIAL DE LOS SPRITES Y FUNCION CONTROL DE TAMAÑO*/
-      prepoGrowth = 0
-      meanerGrowth = 0
-      applyMonsterScale()
-
-      /*INFO MONSTRUO DEL JUGADOR*/
-      prepoInfo = document.createElement("div")
-      prepoInfo.classList.add("btn--rounded", "monster-info--player")
-
-      /*INFO MONSTRUO ENEMIGO */
-      meanerPrepoInfo = document.createElement("div")
-      meanerPrepoInfo.classList.add("btn--rounded", "monster-info--enemy")
-
-      /*INFO MONSTRUO DEL JUGADOR AÑADIDO AL HTML */
-      prepoInfo.innerHTML = `
-      <p class="monster-name">${prepoName}</p>
-      <p class="monster-points">Points: <span id="prepo-points">${prepoPoints}</span></p>
-     `
-      /*INFO MONSTRUO ENEMIGO AÑADIDO AL HTML */
-      meanerPrepoInfo.innerHTML = `
-      <p class="monster-name">${meanerPrepoName}</p>
-       <p class="monster-points">Points: <span id="meaner-points">${meanerPrepoPoints}</span></p>
-      `
-      /*AGREGAMOS LOS ESTILOS PARA ENTRADA MONSTRUOS AL GAME AREA*/
-      prepoMonster.classList.add("monster--enter")
-      meanerPrepoMonster.classList.add("monster--enter")
-
-      /*AGREGAMOS TODOS LOS ELEMENTOS A BLOQUE DE MONSTRUOS*/
-      /*PLAYER*/
-      monsterVisual.appendChild(imagePrepoMonster)
-      prepoMonster.appendChild(monsterVisual)
-      prepoMonster.appendChild(prepoInfo)
-      /*ENEMY*/
-      meanerVisual.appendChild(imageMeanerPrepoMonster)
-      meanerPrepoMonster.appendChild(meanerVisual)
-      meanerPrepoMonster.appendChild(meanerPrepoInfo)
-
-      /*AGREGAMOS BLOQUE MONSTRUOS A CONTAINER BOTTOM*/
-      containerBottomMonsters.appendChild(prepoMonster)
-      containerBottomMonsters.appendChild(meanerPrepoMonster)
-
-      /*ACTUALIZACION DE LOS PUNTOS DE LOS MONSTRUOS EN EL ELEMENTO INFO*/
-      prepoPointsText = prepoMonster.querySelector("#prepo-points")
-      meanerPrepoPointsText = meanerPrepoMonster.querySelector("#meaner-points")
-
-      /* AÑADIMOS UN BREVE DELAY PARA DISPARAR ANIMACION DE LOS MONSTRUOS*/
-      setTimeout(() => {
-        prepoMonster.classList.remove("monster--enter")
-        prepoMonster.classList.add("monster--active")
-
-        meanerPrepoMonster.classList.remove("monster--enter")
-        meanerPrepoMonster.classList.add("monster--active")
-
-      }, 60)
-
-      setTimeout(() => {
-        gameStatus = "question" /* CAMBIO DE STATUS EMPIEZA RONDA DE PREGUNTAS*/
-        questionsRound() /*LLAMADO DE LA SIG. FUNCION*/
-      }, 600)
-
-    }
-    /* FIN FUNCION INICIO DE NIVEL UNO*/
-
-    /* INICIO FUNCION RONDA DE PREGUNTAS*/
-
-    const questionsRound = () => {
-
-      if (gameStatus !== "question") return
-
-      /* LIMPIAMOS TODO PARA INICIAR BARRA CONTADOR DEL TIEMPO */
-
-      clearInterval(timerInterval)
-
-      timeLeft = timePerQuestion
-      timePercentage = 100
-      timeCounter.textContent = timeLeft
-      timeFiller.style.height = "100%"
-
-
-      /* BLOQUE PREGUNTAS*/
-      /*OBTENEMOS DATOS DEL ARRAY OBJETO Y LO ASIGNAMOS A BLOQUE PREGUNTAS*/
-      currentQuestion = activeQuestions[currentQuestionIndex]
-
-      questionText = currentQuestion.question
-      questionImage = currentQuestion.src
-      questionImageAlt = currentQuestion.alt
-      answersButtons = currentQuestion.options
-      correctAnswer = currentQuestion.correct
-      correctAnswerText = currentQuestion.sentence
-
-      /*TRANSICION ENTRE PREGUNTAS*/
-      containerTopQuestions.style.opacity = "0";
-      containerTopQuestions.style.transform = "translateY(6px)";
-
-      containerTopQuestions.innerHTML = "" /*LIMPIAMOS CONTENEDOR TOP*/
-      /*DESBLOQUEO DE CLICKS*/
-      hasAnswered = false
-      isClickable = true
-
-      /*RENDERIZAR BLOQUE PREGUNTA EN GAME AREA*/
-      questionBlock = document.createElement("div")
-      questionBlock.classList.add("questions", "visual")
-
-      questionBlock.innerHTML = `
-            <div class="question-image">
-              <img src="${questionImage}" alt="${questionImageAlt}">
-            </div>
-            <span class="text-h4">QUESTION ${currentQuestionIndex + 1}</span>
-            <p class="text-h3">${questionText}</p>
-            `
-      /*BlOQUE DE BOTONES DE OPCIONES DE RESPUESTA*/
-      const buttonsContainer = document.createElement("div")
-      buttonsContainer.classList.add("questions-btns", "visual-row")
-      buttonsContainer.style.pointerEvents = "auto"
-
-      const shuffledOptions = shuffleBtnOptions(currentQuestion.options)
-
-      shuffledOptions.forEach(optionText => { /* FUNCIÓN SHUFFLE BOTONES DE OPCIONES DE RESPUESTAS 
-        PARA EVITAR PATRON PREDICTIVO*/
-
-        /*RENDERIZAR BLOQUE OPCIONES DE RESPUESTA  EN GAME AREA*/
-        const btn = document.createElement("button")
-        btn.type = "button"
-        btn.classList.add("btn--rounded")
-
-        btn.innerHTML = `<span class="text-body">${optionText}</span>`
-
-        /*EVENTO PARA SELECCIONAR RESPUESTA*/
-        btn.addEventListener("click", () => {
-          if (gameStatus !== "question") return
-          if (hasAnswered) return
-          /*BLOQUEO DE CLICKS*/
-          hasAnswered = true
-          isClickable = false
-          buttonsContainer.style.pointerEvents = "none"
-
-          /*SE DETIENE CONTADOR Y SOMIDO AL SELECCIONAR RESPUESTA*/
-          clearInterval(timerInterval)
-          soundTimerCountdown.pause()
-          soundTimerCountdown.currentTime = 0
-
-          /*DECLARAMOS VARIABLES DE RESPUESTAS CORRECTAS*/
-          const selectedAnswer = optionText
-          const isCorrect = selectedAnswer === correctAnswer
-          const questionParagraph = questionBlock.querySelector(".text-h3")
-
-          /* RESPUESTA CORRECTA */
-          if (isCorrect) {
-            questionParagraph.textContent = correctAnswerText
-            questionParagraph.classList.add("answer-correct")
-
-            /* CAMBIAMOS COLOR FONDO BOTÓN CORRECTO*/
-            btn.classList.add("btn-correct")
-
-            /*DESACTIVAMOS LOS BOTONES MIENTRAS*/
-            const allButtons = buttonsContainer.querySelectorAll(".btn--rounded")
-            allButtons.forEach(button => {
-              button.disabled = true
-            })
-
-            updatePrepoState("happy")
-            updateMeanerState("sad")
-
-            /*SONIDO DE CORRECT*/
-            soundCorrect.currentTime = 0
-            soundCorrect.play().catch(() => { }) //SOLUCION DADO POR IA
-
-            /* SONIDO DE FRASE CORRECTA*/
-            setTimeout(() => {
-              /* REPRODUCIMOS SONIDO DE FRASE CORRECTA*/
-              const sentenceAudio = sentenceSounds[currentQuestionIndex]
-              if (sentenceAudio) {
-                sentenceAudio.currentTime = 0
-                sentenceAudio.play().catch(() => { })
-              }
-            }, 600)
-
-
-          }
-
-          /* RESPUESTA INCORRECTA */
-          if (!isCorrect) {
-            feedbackBlock.textContent = "WRONG!"
-            feedbackBlock.className = "question-feedback wrong"
-            feedbackBlock.style.display = "block"
-
-            questionParagraph.textContent = correctAnswerText
-            questionParagraph.classList.add("answer-wrong")
-
-            /* CAMBIAMOS COLOR FONDO BOTÓN CORRECTO E INCORRECTO*/
-            const allButtons = buttonsContainer.querySelectorAll(".btn--rounded")
-
-            allButtons.forEach(button => {
-              const text = button.textContent.trim()
-
-              if (text === correctAnswer) {
-                button.classList.add("btn-correct")
-              }
-
-              if (text === selectedAnswer) {
-                button.classList.add("btn-wrong")
-              }
-            })
-
-            updatePrepoState("sad")
-            updateMeanerState("happy")
-
-            /*SONIDO DE INCORRECT*/
-            soundWrong.currentTime = 0
-            soundWrong.play()
-          }
-
-          /* ESPERAR Y SIGUIENTE FINAL DEL NIVEL */
-          setTimeout(() => {
-            feedbackBlock.textContent = ""
-            feedbackBlock.className = "question-feedback"
-            feedbackBlock.style.display = "none"
-            questionParagraph.classList.remove("answer-correct", "answer-wrong")
-
-            /* RESETEO SPRITES */
-            imagePrepoMonster.src = "prepositions-battles/images/monsters/webp/prepo-battle.webp"
-            imageMeanerPrepoMonster.src = "prepositions-battles/images/monsters/webp/meanerprepo-battle.webp"
-
-            currentQuestionIndex++
-            hasAnswered = false
-            isClickable = true
-
-            if (currentQuestionIndex < totalQuestions) {
-              gameStatus = "question"
-              questionsRound()
-            } else {
-              gameStatus = "ended"
-              const finalDelay = 800 // DELAY PARA ENTRAR EL BLOQUE FINAL DE NIVEL
-              setTimeout(() => {
-                if (currentLevel === 1) {
-                  endLevelOne()
-                } else if (currentLevel === 2) {
-                  endLevelTwo()
-                }
-              }, finalDelay)
-            }
-
-          }, feedbackDuration)
-        })
-        buttonsContainer.appendChild(btn)
-      });
-
-      /*AGREGAMOS BLOQUE PREGUNTA AL CONTAINER TOP*/
-      containerTopQuestions.appendChild(questionBlock)
-      /*AGREGAMOS BLOQUE DE OPCIONES DE RESPUESTA AL CONTAINER TOP*/
-      containerTopQuestions.appendChild(buttonsContainer)
-      /*AGREGAMOS BLOQUE DE FEEDBACK AL CONTAINER TOP*/
-      containerTopQuestions.appendChild(feedbackBlock)
-
-      /* EFECTOS TRANSICION ENTRE PREGUNTAS */
-      requestAnimationFrame(() => {
-        containerTopQuestions.style.opacity = "1";
-        containerTopQuestions.style.transform = "translateY(0)";
-      });
-      /* LLAMAMOS FUNCION QUE CONTROLA BARRA CONTADOR DEL TIEMPO */
-      startTimer()
-    }
-    /* FIN FUNCION RONDA DE PREGUNTAS*/
-
-    /*INICIO FUNCION PARA CONTROL TAMAÑO DE LOS MONSTRUOS*/ // /*EN ESTA PARTE UTILICE CHAT GPT PARA DAR
-    // CON LA SOLUCIÓN PARA GENERAR EL CRECIMIENTO DE LOS MONSTRUOS, EL PROMPT FUE: "COMO HAGO CRECER LOS SPRITES
-    // SIN ROMPER EL CONTENEDOR"
-    function applyMonsterScale() {
-      imagePrepoMonster.style.transform =
-        `scale(${BASE_SCALE + prepoGrowth})`
-
-      imageMeanerPrepoMonster.style.transform =
-        `scale(${BASE_SCALE + meanerGrowth})`
-    }
-    /*FIN FUNCION PARA CONTROL TAMAÑO DE LOS MONSTRUOS*/
-
-    /* INICIO FUNCION ACTUALIZAR ESTADO DE MONSTRUO PLAYER*/
-
-    const updatePrepoState = (state) => {
-      if (state === "happy") {
-        prepoPoints++
-        prepoGrowth += 0.1
-        imagePrepoMonster.src = "prepositions-battles/images/monsters/webp/prepo-win.webp"
-        soundMonsterGrow.currentTime = 0
-        soundMonsterGrow.play()
-      }
-
-      if (state === "sad") {
-        prepoPoints--
-        prepoGrowth -= 0.1
-        imagePrepoMonster.src = "prepositions-battles/images/monsters/webp/prepo-lose.webp"
-        soundMonsterShrink.currentTime = 0
-        soundMonsterShrink.play()
-      }
-
-      prepoGrowth = Math.max(-0.15, Math.min(prepoGrowth, 0.4))
-      applyMonsterScale()
-      updateMonsterInfo()
-    }
-    /* FIN FUNCION ACTUALIZAR ESTADO DE MONSTRUO PLAYER*/
-
-    /* INICIO FUNCION ACTUALIZAR ESTADO DE MONSTRUO ENEMIGO*/
-
-    const updateMeanerState = (state) => {
-      if (state === "happy") {
-        meanerPrepoPoints++
-        meanerGrowth += 0.2
-        imageMeanerPrepoMonster.src =
-          "prepositions-battles/images/monsters/webp/meanerprepo-win.webp"
-        soundMonsterGrow.currentTime = 0
-        soundMonsterGrow.play()
-      }
-
-      if (state === "sad") {
-        meanerPrepoPoints--
-        meanerGrowth -= 0.1
-        imageMeanerPrepoMonster.src =
-          "prepositions-battles/images/monsters/webp/meanerprepo-lose.webp"
-        soundMonsterShrink.currentTime = 0
-        soundMonsterShrink.play()
-      }
-
-      meanerGrowth = Math.max(-0.15, Math.min(meanerGrowth, 0.8))
-      applyMonsterScale()
-      updateMonsterInfo()
-
-      console.log("MEANER:", state, meanerGrowth)
-    }
-    /* FIN FUNCION ACTUALIZAR ESTADO DE MONSTRUO ENEMIGO*/
-
-    /*INICIA FUNCION SHUFFLE BOTONES DE OPCIONES DE RESPUESTAS PARA EVITAR PATRON PREDICTIVO*/
-
-    const shuffleBtnOptions = (options) => {
-      const copyOptions = [...options]
-      const newOptions = []
-      while (copyOptions.length) {
-        let index = Math.floor(Math.random() * copyOptions.length)
-        newOptions.push(copyOptions[index])
-        copyOptions.splice(index, 1)
-      }
-      return newOptions
-
-    }
-    /*FIN FUNCION SHUFFLE BOTONES DE OPCIONES DE RESPUESTAS*/
-
-    /* BLOQUE FEEDBACK*/
-    feedbackBlock = document.createElement("div")
-    feedbackBlock.classList.add("question-feedback")
-
-    /*  INICIA FUNCION QUE CONTROLA BARRA CONTADOR DEL TIEMPO */
-
-    function startTimer() {
-      if (gameStatus !== "question") return
-
-      timerInterval = setInterval(() => {
-        /*RESTAMOS EL TIEMPO RESTANTE */
-        timeLeft--
-        /*SONIDO ALERTA DE TIEMPO RESTANTE */
-        if (timeLeft === 3) {
-          soundTimerCountdown.currentTime = 0
-          soundTimerCountdown.play()
-        }
-
-        if (timeLeft === 0) {
-          /*ACTUALIZAMOS TEXTO DEL CONTADOR TIEMPO A CERO*/
-          timeLeft = 0
-          timeCounter.textContent = timeLeft
-          /*ACTUALIZAMOS ALTURA DE BARRA DEL CONTADOR TIEMPO A CERO */
-          timeFiller.style.height = "0%"
-
-          /*DETENEMOS CONTADOR */
-          clearInterval(timerInterval)
-          /*DETENEMOS SONIDO */
-          soundTimerCountdown.pause()
-          soundTimerCountdown.currentTime = 0
-
-          gameStatus = "transition" /*CAMBIA STATUS DEL JUEGO*/
-
-          /*ACTUALIZAMOS PUNTOS A LOS MONSTRUOS*/
-          updatePrepoState("sad")
-          updateMeanerState("happy")
-          /*RENDERIZAMOS MENSAJE TIME OVER */
-          feedbackBlock.textContent = "TIME OVER"
-          feedbackBlock.classList.add("time-over")
-
-          setTimeout(() => {
-            feedbackBlock.textContent = ""
-            feedbackBlock.classList.remove("time-over")
-
-            /*RESETEO DE LOS SPRITE*/
-            imagePrepoMonster.src = "prepositions-battles/images/monsters/webp/prepo-battle.webp"
-            imageMeanerPrepoMonster.src = "prepositions-battles/images/monsters/webp/meanerprepo-battle.webp"
-
-
-            currentQuestionIndex++
-
-            if (currentQuestionIndex < totalQuestions) {
-              gameStatus = "question"
-              questionsRound()
-            } else {
-              gameStatus = "ended"
-              endLevelOne() /*LlAMADO DE FUNCION FIN DE NIVEL UNO*/
-
-            }
-          }, 1500)
-
-          return
-        }
-        /*ACTUALIZAMOS TEXTO DEL CONTADOR TIEMPO*/
-        timeCounter.textContent = timeLeft
-        /*ACTUALIZAMOS BARRA DEL CONTADOR TIEMPO */
-        timePercentage = (timeLeft / timePerQuestion) * 100
-        /*ACTUALIZAMOS ALTURA DE BARRA DEL CONTADOR TIEMPO */
-        timeFiller.style.height = timePercentage + "%"
-
-
-      }, 1000)
-
-    }
-    /*FIN FUNCION QUE CONTROLA BARRA CONTADOR DEL TIEMPO */
-
-    /*FUNCION PARA FINALIZAR NIVEL UNO Y PASAR AL SIGUIENTE*/
-
-    const endLevelOne = () => {
-      if (gameStatus !== "ended") return
-      if (levelOneEnded) return
-
-      levelOneEnded = true
-
-      clearInterval(timerInterval)
-      isClickable = false
-      soundTimerCountdown.pause()
-      soundTimerCountdown.currentTime = 0
-
-      containerTopQuestions.innerHTML = ""
-
-      const playerWon = prepoPoints > meanerPrepoPoints
-
-      const endBlock = document.createElement("div")
-      endBlock.classList.add("end-level")
-
-      if (playerWon) {
-        soundWinLevel.currentTime = 0
-        soundWinLevel.play()
-
-        imagePrepoMonster.src = "prepositions-battles/images/monsters/webp/prepo-win.webp"
-        imageMeanerPrepoMonster.src = "prepositions-battles/images/monsters/webp/meanerprepo-lose.webp"
-
-        endBlock.innerHTML = `
-      <h2 class="text-h2">YOU WIN</h2>
-      <p class="text-h3">Level One Completed</p>
-      <button class="btn--rounded" id="next-level">Next Level</button>
-    `
-      } else {
-        soundLoseLevel.currentTime = 0
-        soundLoseLevel.play()
-
-        imagePrepoMonster.src = "prepositions-battles/images/monsters/webp/prepo-lose.webp"
-        imageMeanerPrepoMonster.src = "prepositions-battles/images/monsters/webp/meanerprepo-win.webp"
-
-        endBlock.innerHTML = `
-      <h2 class="text-h2">YOU LOSE</h2>
-      <p class="text-h3">Level One Completed</p>
-      <button class="btn--rounded" id="next-level">Next Level</button>
-    `
-      }
-
-      containerTopQuestions.appendChild(endBlock)
-      
-      /*BOTON DEL PROXIMO NIVEL*/
-      const nextBtn = endBlock.querySelector("#next-level")
-      nextBtn.addEventListener("click", () => {
-        currentLevel = 2
-        gameStatus = "level-start"
-        gameAreaBlock.innerHTML = ""
-        showLevelText()
-      })
-
-
-    }
-    /*FIN FUNCION PARA FINALIZAR NIVEL UNO Y PASAR AL SIGUIENTE NIVEL*/
-
-    /*INICIO FUNCION NIVEL DOS */
-
-    const endLevelTwo = () => {
-      if (gameStatus !== "ended") return
-
-      clearInterval(timerInterval)
-      isClickable = false
-      soundTimerCountdown.pause()
-      soundTimerCountdown.currentTime = 0
-
-      containerTopQuestions.innerHTML = ""
-
-      const playerWon = prepoPoints > meanerPrepoPoints
-
-      const endBlock = document.createElement("div")
-      endBlock.classList.add("end-level", "end-game")
-
-      if (playerWon) {
-        soundWinLevel.currentTime = 0
-        soundWinLevel.play()
-
-        imagePrepoMonster.src = "prepositions-battles/images/monsters/webp/prepo-win.webp"
-        imageMeanerPrepoMonster.src = "prepositions-battles/images/monsters/webp/meanerprepo-lose.webp"
-
-        endBlock.innerHTML = `
-      <h2 class="text-h2">GAME COMPLETED</h2>
-      <p class="text-h3">You won the battle!</p>
-      <p class="text-h4">Final Score: ${prepoPoints}</p>
-      <button class="btn--rounded" id="end-game-btn">Finish</button>
-    `
-      } else {
-        soundLoseLevel.currentTime = 0
-        soundLoseLevel.play()
-
-        imagePrepoMonster.src = "prepositions-battles/images/monsters/webp/prepo-lose.webp"
-        imageMeanerPrepoMonster.src = "prepositions-battles/images/monsters/webp/meanerprepo-win.webp"
-
-        endBlock.innerHTML = `
-      <h2 class="text-h2">GAME OVER</h2>
-      <p class="text-h3">Better luck next time</p>
-      <p class="text-h4">Final Score: ${prepoPoints}</p>
-      <button class="btn--rounded" id="end-game-btn">Finish</button>
-    `
-      }
-
-      containerTopQuestions.appendChild(endBlock)
-
-      document
-        .getElementById("end-game-btn")
-        .addEventListener("click", () => {
-
-          endBlock.style.display = "none"
-
-          /*SCORE DEL JUGADOR*/
-          let scoreBoard = document.createElement("div")
-          scoreBoard.classList.add("score-board")
-
-          scoreBoard.innerHTML = `
-          <h2 class="text-h2">Save your score</h2>
-          <form id="score-form" class="score-form">
-          <label class="text-h4" for="player-name">
-            Your name
-          </label>
-          <input 
-          type="text"
-          id="player-name"
-          name="playerName"
-          placeholder="Enter your name"
-          maxlength="15"
-          required
-          />
-          <p class="text-h4">
-          Final score: <strong>${prepoPoints}</strong>
-          </p>
-
-          <button type="submit" class="btn--rounded">
-          Save score
-          </button>
-          </form>
-      `
-          containerTopQuestions.appendChild(scoreBoard)
-
-          const form = document.getElementById("score-form")
-
-          form.addEventListener("submit", (e) => {
-            /*EVITAR RECARGAR LA PÁGINA*/
-            e.preventDefault()
-
-            /*LEER INPUT*/
-            const input = document.getElementById("player-name")
-            const playerName = input.value.trim()
-
-            /* VALIDAR */
-            if (playerName.length === 0) {
-              alert("Name is empty!")
-              return
-            }
-
-            /*CREAR SCORE*/
-            const userScore = {
-              name: playerName,
-              score: prepoPoints
-            }
-            /*GUARDAR SCORE EN ARRAY*/
-            scores.push(userScore)
-
-            /*ORDENAR SCORES (MAYOR A MENOR)*/
-            scores.sort((a, b) => b.score - a.score)
-
-            /*GUARDAR SCORES DE PARTIDA*/
-
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(scores))
-
-            /*LIMPIAR FORM*/
-            input.value = ""
-
-            /*LIMPIAR UI*/
-            containerTopQuestions.innerHTML = ""
-
-            /*RENDERIZADO SCOREBOARD*/
-            const scoresFinal = document.createElement("div")
-            scoresFinal.classList.add("score-final")
-
-            let rows = scores.map((s, index) => {
-              return `
-                  <tr>
-                    <td>${index + 1}</td>
-                    <td>${s.name}</td>
-                    <td>${s.score}</td>
-                  </tr>
-              `
-            }).join("")
-
-            scoresFinal.innerHTML = `
-                  <h2 class="text-h2">Score Board</h2>
-                  <table class="score-table">
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Points</th>
-                      </tr>
-                    </thead>
-                  <tbody>
-                      ${rows}
-                  </tbody>
-                </table>
-                `
-            document.body.appendChild(scoresFinal)
-
-
-          })
-        })
-
-    }
-    /*FIN FUNCION NIVEL DOS FIN DEL JUEGO*/
-  }, { once: true })
+    /*TEXTO BOTON DE INICIAR JUEGO*/
+    dom.btnPlay.innerText = GameData.instructions.buttonText
+
+    /*EVENTO PARA INICIAR JUEGO*/
+    dom.btnPlay.addEventListener("click", handlePlayClick)
+  }
+  /*PRE CARGA DE SONIDOS DE EFECTOS ESPECIALES */
+
+  gameState.audio.sfx = {
+    click: new Audio(getPath('sfx', 'play-button.mp3')),
+    correct: new Audio(getPath('sfx', 'correct.mp3')),
+    wrong: new Audio(getPath('sfx', 'wrong.mp3')),
+    grow: new Audio(getPath('sfx', 'monster-grow.mp3')),
+    shrink: new Audio(getPath('sfx', 'monster-shrink.mp3')),
+    win: new Audio(getPath('sfx', 'win-level.mp3')),
+    lose: new Audio(getPath('sfx', 'lose-level.mp3')),
+    timer: new Audio(getPath('sfx', 'timer-countdown.mp3'))
+  }
 
 }
-
-initGame()
-
+/*=============END OF INITGAME()===================*/
 
 
+/***FUNCION DE EVENTO EN EL BOTON DE INICIO JUEGO***/
+
+const handlePlayClick = () => {
+  /*SONIDO DEL BOTON PLAY*/
+  gameState.audio.sfx.click.play().catch(e => { })
+
+  /*OCULTA LAS INSTRUCCIONES JUEGO*/
+  hideInstructions()
+
+  /*RESET DE  LOS ESTADOS*/
+  gameState.level = 1
+  gameState.scores.player = { points: 0, growth: 0 }
+  gameState.scores.enemy = { points: 0, growth: 0 }
+
+  /*INICIA NIVEL UNO*/
+  startLevel(1)
+}
+/*===========END OF HANDLEPLAYCLICK()===============*/
+
+
+/***INICIO FUNCION OCULTA INSTRUCCIONES DEL JUEGO***/
+
+const hideInstructions = () => {
+
+  if (gameState.status !== "level-start") return
+
+  instrBlock.style.pointerEvents = "none" /*EVITA CUALQUIER EVENTO CON EL PUNTERO DEL RATON*/
+  instrBlock.classList.add("fade-out") /*OCULTA GRADUALMENTE LAS INSTRUCCIONES DEL JUEGO */
+
+  setTimeout(() => {
+    instrBlock.style.display = "none" /*TIEMPO DE ESPERA PARA OCULTAR LAS INSTRUCCIONES*/
+    startLevel() /*LLAMADO DE LA SIG. FUNCION*/
+  }, 800)
+}
+/*=====END OF HIDEINSTRUCTIONS()===================*/
+
+
+/**ETAPA DOS DEL JUEGO**/
+/***INICIO FUNCION INICIO DEL PRIMER NIVEL ***/
+
+const startLevel = (levelNum) => {
+  const levelConfig = GameData.levels[levelNum] /*COPIA TODOS LOS DATOS DE LOS NIVELES DEL ARCHIVO CONFIG.JS*
+
+    /*CHEQUEAR SI CONDICION INICIAL SE CUMPLE*/
+  if (!levelConfig) {
+    finishGame()
+    return
+  }
+
+  gameState.level = levelNum
+  gameState.status = "level-start"
+  gameState.activeQuestions = levelConfig.questions /*COPIA PREGUNTAS DEL ARCHIVO CONFIG.JS*/
+  gameState.questionIndex = 0
+
+  /*RENDERIZADO TEXTO DE NIVELES*/
+  dom.levelTextH3.innerText = `LEVEL ${levelNum}`
+  dom.levelTextOverlay.classList.add("level-text--active")
+
+  /*REPRODUCCION AUDIO INICIAL DEL NIVEL*/
+  if (levelConfig.introAudio) {
+    const audio = new Audio(levelConfig.introAudio)
+    audio.volume = 0.7
+    audio.play().catch(e => { })
+  }
+
+  /*OCULTAMOS TEXTO TRAS UN DELAY*/
+  setTimeout(() => {
+    dom.levelTextOverlay.classList.remove("level-text--active")
+    setupGameArea() /*LLAMADO DE PROX FUNCION DE RENDERIZADO DE SPRITES*/
+    nextQuestion()  /*LLAMADO DE PROX FUNCION INICIO RONDA DE PREGUNTAS*/
+  }, 2000)
+}
+
+/*=====END OF HIDEINSTRUCTIONS()===================*/
+
+
+/**ETAPA TRES DEL JUEGO**/
+/***INICIO FUNCION DE RENDERIZADO DE ÁREA JUEGO Y SPRITES/MONSTRUOS***/
+
+const setupGameArea = () => {
+  /*LIMPIAMOS EL AREA DE JUEGO*/
+  dom.gameBlock.innerHTML = ""
+
+  /*CREAMOS CONTENEDORES TOP Y BOTTOM*/
+  const topDiv = document.createElement("div")
+  topDiv.classList.add("top", "visual")
+  const bottomDiv = document.createElement("div")
+  bottomDiv.classList.add("bottom")
+
+  /*RENDERIZADO DE LOS MONSTRUOS/SPRITES*/
+  bottomDiv.innerHTML = `
+        <div class="monster player monster--enter">
+            <div class="monster-visual">
+                <img src="${getPath('monster', GameData.player.sprites.idle)}" id="img-player" alt="${GameData.player.name}">
+            </div>
+            <div class="btn--rounded monster-info--player">
+                <p class="monster-name">${GameData.player.name}</p>
+                <p class="monster-points">Points: <span id="score-player">0</span></p>
+            </div>
+        </div>
+
+        <div class="monster enemy monster--enter">
+            <div class="monster-visual">
+                <img src="${getPath('monster', GameData.enemy.sprites.idle)}" id="img-enemy" alt="${GameData.enemy.name}">
+            </div>
+            <div class="btn--rounded monster-info--enemy">
+                <p class="monster-name">${GameData.enemy.name}</p>
+                <p class="monster-points">Points: <span id="score-enemy">0</span></p>
+            </div>
+        </div>
+    `
+  /*AGREGADO DE LOS MONSTRUOS/SPRITES AL CONTENEDOR PADRE*/
+  dom.gameBlock.appendChild(topDiv)
+  dom.gameBlock.appendChild(bottomDiv)
+
+  /*DECLARAMOS NUEVAS VARIABLES DOM DE LOS SPRITES Y SUS INFO DE PUNTUACION*/
+  dom.imgPlayer = document.getElementById("img-player")
+  dom.imgEnemy = document.getElementById("img-enemy")
+  dom.txtScorePlayer = document.getElementById("score-player")
+  dom.txtScoreEnemy = document.getElementById("score-enemy")
+
+  /*ACTUALIZAMOS LA UI DE LOS SPRITES Y SISTEMA PUNTAJE*/
+  updateUI()
+
+  /*REMOVEMOS LA ENTRADA DE LOS SPRITES*/
+  setTimeout(() => {
+    document.querySelectorAll(".monster").forEach(el => {
+      el.classList.remove("monster--enter")
+      el.classList.add("monster--active")
+    })
+  }, 100)
+
+}
+/*=====END OF SETUPGAMEAREA()===================*/
+
+/**ETAPA CUATRO DEL JUEGO**/
+/***INICIO FUNCION DE RONDA DE PREGUNTAS***/
+
+const nextQuestion = () => {
+  /*VERIFICAR CONDICION SI QUEDAN PREGUNTAS RESTANTES*/
+  if (gameState.questionIndex >= gameState.activeQuestions.length) {
+    /*SI NO HAY PREGUNTAS FINALIZAMOS EL NIVEL*/
+    endLevel()
+    return
+  }
+  /*CAMBIO DE STATUS DEL JUEGO Y DECLARACION VARIABLES PREGUNTA Y CONTENEDOR*/
+  gameState.status = "question"
+  const qData = gameState.activeQuestions[gameState.questionIndex]
+  const topContainer = dom.gameBlock.querySelector(".top")
+
+  /*REMOVEMOS LA ENTRADA DE LOS SPRITES*/
+  topContainer.innerHTML = ""
+  topContainer.style.opacity = 0
+
+  /*RENDERIZAMOS BLOQUES DE PREGUNTAS*/
+  const qBlock = document.createElement("div")
+  qBlock.classList.add("questions", "visual")
+  qBlock.innerHTML = `
+        <div class="question-image">
+            <img src="${getPath('q_img', qData.src)}" alt="${qData.alt}">
+        </div>
+        <span class="text-h4">QUESTION ${gameState.questionIndex + 1}</span>
+        <p class="text-h3" id="q-text">${qData.question}</p>
+    `
+
+  /*CREAMOS LOS BOTONES DE RESPUESTAS*/
+  const btnContainer = document.createElement("div")
+  btnContainer.classList.add("questions-btns", "visual-row")
+
+  /*BARAJAMOS BOTONES DE RESPUESTAS PARA EVITAR USUARIO MEMORICE POSICION*/
+  const shuffledOptions = [...qData.options].sort(() => Math.random() - 0.5)
+
+  shuffledOptions.forEach(opt => {
+    const btn = document.createElement("button")
+    btn.classList.add("btn--rounded")
+    btn.innerHTML = `<span class="text-body">${opt}</span>`
+
+    btn.onclick = () => handleAnswer(opt, qData, btn, btnContainer)
+    btnContainer.appendChild(btn)
+  })
+
+  /*CREAMOS CONTENEDOR DE FEEDBACK*/
+  const feedbackDiv = document.createElement("div")
+  feedbackDiv.classList.add("question-feedback")
+  feedbackDiv.id = "feedback-box"
+
+  topContainer.appendChild(qBlock)
+  topContainer.appendChild(btnContainer)
+  topContainer.appendChild(feedbackDiv)
+
+  /*ANIMACION DE ENTRADA DE PREGUNTAS*/
+  requestAnimationFrame(() => {
+    topContainer.style.opacity = 1
+    topContainer.style.transform = "translateY(0)"
+  })
+
+  /*INICIO DE CONTADOR BARRA DE TIEMPO*/
+  startTimer(GameData.levels[gameState.level].time)
+}
+
+/*=====END OF NEXTQUESTION()===================*/
+
+
+/**ETAPA CINCO DEL JUEGO**/
+/***INICIO FUNCION DE MANEJO DE PREGUNTAS Y BARRA DE TIEMPO***/
+
+const handleAnswer = (selected, qData, clickedBtn, container) => {
+  if (gameState.status !== "question") return
+
+  /*CUANDO USUARIO ESCOGE UNO DE LOS BOTONES DE RESPUESTA LA BARRA DE TIEMPO SE PAUSA*/
+  gameState.status = "answering"
+  clearInterval(gameState.timerInterval)
+  gameState.audio.sfx.timer.pause()
+
+  /*VALIDAMOS LA OPCION DE RESPUESTA ESCOGIDA POR USUARIO*/
+  const isCorrect = selected === qData.correct
+  const qText = document.getElementById("q-text")
+  const feedback = document.getElementById("feedback-box")
+
+  /*DESACTIVAMOS LOS BOTONES*/ 
+  Array.from(container.children).forEach(b => b.disabled = true)
+
+  if (isCorrect) {
+    /*CONDICION RESPUESTA CORRECTA*/ 
+    gameState.audio.sfx.correct.play()  /*SE REPRODUCE EL AUDIO*/ 
+    clickedBtn.classList.add("btn-correct")
+    qText.innerText = qData.sentence/*MOSTRAMOS LA ORACION COMPLETA*/ 
+    qText.classList.add("answer-correct")
+
+    /*ACTUALIZAMOS EL ESTADO DE LOS SPRITES*/ 
+    updateMonster("player", "win")
+    updateMonster("enemy", "lose")
+
+    /*SE REPRODUCE EL AUDIO DE LA ORACION*/ 
+    if (qData.audio) {
+      setTimeout(() => {
+        const sAudio = new Audio(getPath('q_audio', qData.audio))
+        sAudio.volume = 0.7
+        sAudio.play().catch(e => { })
+      }, 500)
+    }
+
+  } else {
+    /*CONDICION RESPUESTA INCORRECTA*/ 
+    gameState.audio.sfx.wrong.play()
+    clickedBtn.classList.add("btn-wrong")
+
+    /*MOSTRAMOS LA OPCION CORRECTA*/ 
+    Array.from(container.children).forEach(b => {
+      if (b.innerText === qData.correct) b.classList.add("btn-correct")
+    })
+
+    qText.innerText = qData.sentence
+    qText.classList.add("answer-wrong")
+
+    /*MOSTRAMOS EL FEEDBACK*/ 
+    feedback.innerText = "WRONG!"
+    feedback.classList.add("question-feedback", "wrong")
+    feedback.style.display = "block"
+
+    /*ACTUALIZAMOS EL ESTADO DE LOS SPRITES*/ 
+    updateMonster("player", "lose")
+    updateMonster("enemy", "win")
+  }
+
+  /*AVANZAMOS AL SIGUIENTE NIVEL*/ 
+  setTimeout(() => {
+    resetMonstersVisuals() /*SE RESTAURA LOS SPRITES INICIALES*/
+    gameState.questionIndex++
+    nextQuestion()
+  }, MOD_CONFIG.feedbackDuration)
+}
+
+/*=====END OF HANDLEANSWER()===================*/
+
+
+/***INICIO FUNCION DE BARRA DEL TIEMPO ***/
+const startTimer = (seconds) => {
+    gameState.timeLeft = seconds
+    dom.timerDisplay.innerText = seconds
+    dom.timerBar.style.height = "100%"
+
+    gameState.timerInterval = setInterval(() => {
+        gameState.timeLeft--
+        dom.timerDisplay.innerText = gameState.timeLeft
+        
+        /*PORCENTAJE DE LA BARRA*/ 
+        const pct = (gameState.timeLeft / seconds) * 100
+        dom.timerBar.style.height = `${pct}%`
+
+        /*SONIDO DE ADVERTENCIA SI QUEDAN TRES SEG*/ 
+        if (gameState.timeLeft === 3) {
+            gameState.audio.sfx.timer.currentTime = 0
+            gameState.audio.sfx.timer.play().catch(e=>{})
+        }
+
+        if (gameState.timeLeft <= 0) {
+            handleTimeOver()
+        }
+    }, 1000)
+}
+/*=====END OF STARTTIMER()===================*/
+
+/***INICIO FUNCION DE PENALIZACION CUANDO TIEMPO SE TERMINA Y USUARION NO RESPONDE ***/
+const handleTimeOver = () => {
+    clearInterval(gameState.timerInterval)
+    gameState.audio.sfx.timer.pause()
+    
+    /*ACTUALIZACION DE ESTADO DE LOS SPRITES*/ 
+    updateMonster("player", "lose")
+    updateMonster("enemy", "win")
+
+    const feedback = document.getElementById("feedback-box")
+    if(feedback) {
+        feedback.innerText = "TIME OVER!"
+        feedback.classList.add("question-feedback", "time-over")
+        feedback.style.display = "block"
+    }
+
+    setTimeout(() => {
+        resetMonstersVisuals()
+        gameState.questionIndex++
+        nextQuestion()
+    }, 1500)
+}
+
+/*=====END OF HANDLETIMEOVER()===================*/
+
+
+/**ETAPA SEIS DEL JUEGO**/
+/***INICIO FUNCION DE ACTUALIZACION DE ESTADOS DE LOS SPRITES/MONSTRUOS***/
+
+const updateMonster = (who, mood) => {
+    /*LOGICA DE LOS PARAM: WHO: 'PLAYER' | 'ENEMY'*/ 
+    /*LOGICA DE LOS PARAM  MOOD: 'WIN' | 'LOSE'*/ 
+
+    /*DECLARAMOS LAS VARIABLES DE PUNTOS, IMAGENES Y ACCESO DE LA DATA DE PLANTILLA CONFIG.JS*/ 
+    const targetObj = gameState.scores[who]
+    const targetImg = who === 'player' ? dom.imgPlayer : dom.imgEnemy
+    const configData = who === 'player' ? GameData.player : GameData.enemy
+
+    /*LOGICA DE PUNTOS*/ 
+    const pointsChange = mood === 'win' ? 1 : -1
+    targetObj.points += pointsChange
+
+    /*LOGICA DE CRECIMIENTO DE LOS SPRITES SEGUN PUNTAJE*/
+    const growthChange = mood === 'win' ? MOD_CONFIG.growthStep : -MOD_CONFIG.growthStep
+    targetObj.growth += growthChange
+    /*LIMITAMOS CRECIMIENTO*/ 
+    targetObj.growth = Math.max(MOD_CONFIG.minGrowth, Math.min(targetObj.growth, MOD_CONFIG.maxGrowth))
+
+    /*CARGADO DE IMAGENES PARA SPRITES*/ 
+    targetImg.src = getPath('monster', configData.sprites[mood])
+
+    /*CARGADO DE EFECTOS DE SONIDO SI SE PIERDE O GANA*/ 
+    const sound = mood === 'win' ? gameState.audio.sfx.grow : gameState.audio.sfx.shrink
+    sound.currentTime = 0
+    sound.play().catch(e=>{})
+
+    /*ACTUALIZAMOS LA UI DE LOS SPRITES Y SISTEMA PUNTAJE*/ 
+    updateUI()
+}
+/*=====END OF UPDATEMONSTER()===================*/
+
+/***INICIO DE FUNCION UI DE LOS SPRITES Y SISTEMA PUNTAJE ***/ 
+
+const updateUI = () => {
+    /*ACTUALIZMOS TEXTOS DE LOS PUNTOS*/ 
+    dom.txtScorePlayer.innerText = gameState.scores.player.points
+    dom.txtScoreEnemy.innerText = gameState.scores.enemy.points
+
+    /*ACTUALIZAMOS EL TAMAÑO DE LOS SPRITES*/ 
+    dom.imgPlayer.style.transform = `scale(${MOD_CONFIG.baseScale + gameState.scores.player.growth})`
+    dom.imgEnemy.style.transform = `scale(${MOD_CONFIG.baseScale + gameState.scores.enemy.growth})`
+}
+/*=====END OF UPDATEUI()===================*/
+
+/**ETAPA SIETE DEL JUEGO**/
+/***INICIO FUNCION DE FIN DE NIVEL Y DEL JUEGO***/
+
+const endLevel = () => {
+    clearInterval(gameState.timerInterval)
+    const won = gameState.scores.player.points > gameState.scores.enemy.points
+    
+    const topDiv = dom.gameBlock.querySelector(".top")
+    topDiv.innerHTML = "" /*LIMPIAMOS CONTENEDOR DE PREGUNTAS*/ 
+
+    const endBlock = document.createElement("div")
+    endBlock.className = "end-level"
+
+    /*LOGICA PARA COMPROBAR SI HAY MAS NIVELES*/ 
+    const nextLevel = gameState.level + 1
+    const hasNextLevel = GameData.levels[nextLevel] !== undefined
+
+    if (hasNextLevel) {
+        /*FIN DEL PRIMER NIVEL*/
+        if (won) gameState.audio.sfx.win.play() 
+        else gameState.audio.sfx.lose.play()
+
+        endBlock.innerHTML = `
+            <h2 class="text-h2">${won ? "GOOD JOB!" : "LEVEL COMPLETED"}</h2>
+            <p class="text-h3">Score: ${gameState.scores.player.points}</p>
+            <button class="btn--rounded" id="btn-next">Next Level</button>
+        `
+        topDiv.appendChild(endBlock)
+        
+        document.getElementById("btn-next").onclick = () => {
+            startLevel(nextLevel)
+        }
+
+    } else {
+        /*FIN DEL JUEGO */ 
+        finishGame()
+    }
+}
+/*=====END OF ENDLEVEL()===================*/
+
+
+/***INICIO FUNCION DE FIN DEL JUEGO***/
+
+const finishGame = () => {
+    clearInterval(gameState.timerInterval) /*DETENEMOS BARRA DE TIEMPO*/
+    const won = gameState.scores.player.points > gameState.scores.enemy.points/*DECLARAMOS EL GANADOR*/
+    const topDiv = dom.gameBlock.querySelector(".top")
+    topDiv.innerHTML = ""/*LIMPIAMOS CONTENEDOR DE PREGUNTAS*/
+
+    /*CARGAMOS EFECTO DE SONIDOS PARA GANADOR O PERDEDOR*/
+    if (won) gameState.audio.sfx.win.play()
+    else gameState.audio.sfx.lose.play()
+
+    /*ACTUALIZAMOS LOS SPRITES DE ACUERDO AL PUNTAJE*/ 
+    dom.imgPlayer.src = getPath('monster', won ? GameData.player.sprites.win : GameData.player.sprites.lose)
+    dom.imgEnemy.src  = getPath('monster', !won ? GameData.enemy.sprites.win : GameData.enemy.sprites.lose)
+
+    const endBlock = document.createElement("div")
+    endBlock.className = "end-level end-game"
+    
+    /* RENDERIZAMOS EL BLOQUE DE FINAL DE JUEGO Y GUARDADO DE PUNTAJES */
+    endBlock.innerHTML = `
+        <h2 class="text-h2">${won ? "VICTORY!" : "GAME OVER"}</h2>
+        <p class="text-h3">Total Score: ${gameState.scores.player.points}</p>
+        <button class="btn--rounded" id="btn-save">Save Score</button>
+        <button class="btn--rounded" id="btn-menu">Exit</button>
+    `
+    
+    topDiv.appendChild(endBlock)
+
+    document.getElementById("btn-menu").onclick = () => location.reload()/*BOTON REGRESO AL MENU*/
+    document.getElementById("btn-save").onclick = showScoreForm /*BOTON PARA FORMULARIO DE GUARDADO PUNTOS*/
+}
+
+/*=====END OF FINISHGAME()===================*/
+
+/**ETAPA SIETE DEL JUEGO**/
+/***INICIO FUNCION DE FORMULARIO TABLERO DE PUNTAJES***/
+
+const showScoreForm = () => {
+    const topDiv = dom.gameBlock.querySelector(".top")
+     /* RENDERIZAMOS FORMULARIO TABLERO DE PUNTAJES */
+    const scoresform = `
+        <div class="score-board">
+            <h2 class="text-h2">Hall of Fame</h2>
+            <p>Game: ${GameData.title}</p>
+            <form id="score-form" class="score-form">
+                <input type="text" id="player-name" placeholder="Your Name" maxlength="12" required>
+                <p>Score: <strong>${gameState.scores.player.points}</strong></p>
+                <button type="submit" class="btn--rounded">Submit</button>
+            </form>
+            <div id="high-scores-list"></div>
+        </div>
+    `
+    
+    topDiv.innerHTML = scoresform
+    loadHighScores() /*CARGAMOS TABLERO VACIO O CON PUNTAJES EXIST.*/ 
+
+    document.getElementById("score-form").onsubmit = (e) => {
+        e.preventDefault()
+        saveScore()
+    }
+}
+/*=====END OF SHOWSCOREFORM()===================*/
+
+/***INICIO FUNCION DE TABLERO DE PUNTAJES***/
+const loadHighScores = () => {
+    const key = GameData.gameId /*CLAVE ÚNICA DEL JUEGO*/ 
+    const saved = JSON.parse(localStorage.getItem(key)) || []
+    const listDiv = document.getElementById("high-scores-list")
+    
+    /*ORDENAMOS Y GUARDAMOS LOS CINCO PRIMEROS PUNTAJES MAS ALTOS*/ 
+    saved.sort((a,b) => b.score - a.score)
+    const top5 = saved.slice(0, 5)
+      /*RENDERIZAMOS EL TABLERO DE PUNTAJE*/ 
+    let scoreTable = `<table class="score-table">
+        <thead><tr><th>#</th><th>Name</th><th>Score</th></tr></thead>
+        <tbody>`
+    
+    top5.forEach((s, i) => {
+        scoreTable += `<tr><td>${i+1}</td><td>${s.name}</td><td>${s.score}</td></tr>`
+    })
+    scoreTable += `</tbody></table>`
+    if(top5.length > 0) listDiv.innerHTML = scoreTable
+}
+
+/*=====END OF LOADHIGHSCORES()===================*/
+
+/***INICIO FUNCION DE GUARDADO DE PUNTAJE***/
+const saveScore = () => {
+    const name = document.getElementById("player-name").value.trim()
+    if(!name) return
+
+    const key = GameData.gameId
+    const saved = JSON.parse(localStorage.getItem(key)) || []
+    
+    saved.push({
+        name: name,
+        score: gameState.scores.player.points,
+        date: new Date().toISOString()
+    })
+
+    localStorage.setItem(key, JSON.stringify(saved))
+    
+    /*RACARGAMOS TABLERO DE PUNTAJES*/ 
+    loadHighScores()
+    document.getElementById("score-form").style.display = "none"/*OCULTAMOS EL FORMULARIO*/ 
+    
+    /*BOTON DE SALIDA*/ 
+    const exitBtn = document.createElement("button")
+    exitBtn.className = "btn--rounded"
+    exitBtn.innerText = "Back to Menu"
+    exitBtn.onclick = () => location.reload()
+    document.querySelector(".score-board").appendChild(exitBtn)
+}
+
+/*=====END OF SAVESCORE()===================*/
