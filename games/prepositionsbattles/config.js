@@ -69,7 +69,6 @@ const GameData = {
                     sentence: "The book is on the table.",
                     audio: "level1-question-01.mp3"
                 },
-                ,
                 {
                     src: "level1-question-02.webp",
                     alt: "woman-walking-in-Madrid",
