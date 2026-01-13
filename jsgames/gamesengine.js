@@ -26,9 +26,9 @@ let gameState = {
 /*MODIFICACIONES DURANTE EL JUEGO Y SU DURACION*/
 
 const MOD_CONFIG = {
-  baseScale: 1.5, /*SUGERIDO POR IA CHAT GPT*/ 
+  baseScale: 1.5, /*SUGERIDO POR IA CHAT GPT*/
   growthStep: 0.1,/*SUGERIDO POR IA CHAT GPT: PROMPT: "Como aumento o disminuyo 
-  los sprites gradualmente sin romper el layout"*/ 
+  los sprites gradualmente sin romper el layout"*/
   maxGrowth: 0.5,
   minGrowth: -0.15,
   feedbackDuration: 1500
@@ -54,7 +54,6 @@ const getPath = (type, filename) => {
 }
 /*====END OF GETPATH()=====*/
 
-
 /***FUNCION DE INICIALIZACION DEL JUEGO***/
 
 const initGame = () => {
@@ -79,8 +78,10 @@ const initGame = () => {
   dom.gameArea.style.backgroundSize = "cover"
   dom.gameArea.style.backgroundPosition = "center"
   dom.gameArea.style.backgroundRepeat = "no-repeat"
- 
- 
+  dom.gameArea.style.backgroundAttachment = "scroll"
+
+
+
   /*RENDERIZADO DE LAS INSTRUCCIONES DEL JUEGO*/
 
   const instrBlock = dom.instructions.querySelector(".instructions__block")
@@ -594,6 +595,13 @@ const finishGame = () => {
 
 const showScoreForm = () => {
   const topDiv = dom.gameBlock.querySelector(".top")
+
+  topDiv.style.height = "100%"     
+  topDiv.style.opacity = "1"       
+  topDiv.style.position = "relative"
+  topDiv.style.transform = "none"  
+  topDiv.style.overflow = "visible"
+
   /* RENDERIZAMOS FORMULARIO TABLERO DE PUNTAJES */
   const scoresform = `
         <div class="score-board">
@@ -657,7 +665,7 @@ const saveScore = () => {
 
   localStorage.setItem(key, JSON.stringify(saved))
 
-  /*RACARGAMOS TABLERO DE PUNTAJES*/
+  /*RECARGAMOS TABLERO DE PUNTAJES*/
   loadHighScores()
   document.getElementById("score-form").style.display = "none"/*OCULTAMOS EL FORMULARIO*/
 
@@ -670,3 +678,5 @@ const saveScore = () => {
 }
 
 /*=====END OF SAVESCORE()===================*/
+
+/*========================*/
