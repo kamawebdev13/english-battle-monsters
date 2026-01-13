@@ -55,6 +55,7 @@ a {
     --c-background-darker: #8967B3;
 
     /*TEXT SHADOW*/
+    /*EFECTO TEXT-SHADOW TOMADO DEL GIT https://owumaro.github.io/text-stroke-generator/*/
     --text-shadow: rgb(85, 88, 121) 2px 0px 0px, rgb(85, 88, 121) 1.75517px 0.958851px 0px,
         rgb(85, 88, 121) 1.0806px 1.68294px 0px, rgb(85, 88, 121) 0.141474px 1.99499px 0px,
         rgb(85, 88, 121) -0.832294px 1.81859px 0px, rgb(85, 88, 121) -1.60229px 1.19694px 0px,
@@ -92,7 +93,7 @@ a {
 /*ELEMENTS*/
 
 .icon-outline {
-    /*EFECTO TEXT-SHADOW TOMADO DEL GIT https://owumaro.github.io/text-stroke-generator/*/
+    
     text-shadow: var(--text-shadow);
 }
 
