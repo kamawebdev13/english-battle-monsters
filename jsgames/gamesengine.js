@@ -125,7 +125,7 @@ const initGame = () => {
 /*=============END OF INITGAME()===================*/
 
 
-/***FUNCION DE EVENTO EN EL BOTON DE INICIO JUEGO***/
+/***FUNCION MANEJO DE EVENTO EN EL BOTON DE INICIO JUEGO***/
 
 const handlePlayClick = () => {
   /*SONIDO DEL BOTON PLAY*/
