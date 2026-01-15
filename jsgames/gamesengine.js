@@ -369,7 +369,7 @@ const handleAnswer = (selected, qData, clickedBtn, container) => {
         const sAudio = new Audio(getPath('q_audio', qData.audio))
         sAudio.volume = 0.7
         sAudio.play().catch(e => { })
-      }, 500)
+      }, 600)
     }
 
   } else {
@@ -679,4 +679,7 @@ const saveScore = () => {
 
 /*=====END OF SAVESCORE()===================*/
 
-/*========================*/
+
+
+
+/*===========END OF THE CODE==========*/

@@ -48,6 +48,14 @@ a {
     --c-active-four: #BADFDB;
     --c-active-five: #FFCDC9;
     --c-active-six: #CD5656;
+    --c-time-over: #ff4d4d;
+    --c-correct-btn: #3cff9e;
+    --c-correct-btntxt:#222;
+    --c-incorrect-btn:#6c0909;
+    --c-incorrect-btntxt:#fff;
+    --c-wrong-text:#ff6b6b;
+
+
     --c-hover: #FEEAC9;
     --c-border: #37353E;
     --c-background: #8CA9FF;
@@ -570,26 +578,26 @@ a {
                 }
 
                 & .question-feedback.time-over {
-                    color: #ff4d4d;
+                    color: var(--c-time-over);
                     opacity: 1;
                     transform: translateY(0);
                     text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
                 }
 
                 & .btn--rounded.btn-correct {
-                    background-color: #3cff9e;
-                    color: #222;
+                    background-color: var(--c-correct-btn);
+                    color: var(--c-correct-btntxt);
                 }
 
                 & .btn--rounded.btn-wrong {
-                    background-color: #6c0909;
-                    color: #fff;
+                    background-color: var(--c-incorrect-btn);
+                    color: var(--c-incorrect-btntxt);
                 }
 
 
                 & .question-feedback.wrong {
                     opacity: 1;
-                    color: #ff6b6b;
+                    color: var(--c-wrong-text);
                     font-weight: 700;
                 }
 

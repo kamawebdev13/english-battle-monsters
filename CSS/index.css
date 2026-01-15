@@ -14,6 +14,9 @@ html {
     margin: 0 auto;
     background-color: var(--c-active-four);
     color: white;
+    scroll-behavior: smooth;
+
+
 }
 
 ul,
@@ -88,8 +91,8 @@ a {
     --mw-lg: 60.625rem;
     --mw-md: 40rem;
     --mw-sm: 31.25rem;
-        /*RADIUS*/
-        --r-xl: 6rem;
+    /*RADIUS*/
+    --r-xl: 6rem;
     --r-md: 3rem;
     --r-mmd: 1.5rem;
     --r-sm: .3125rem;
@@ -207,9 +210,105 @@ a {
 
         }
 
+
+        & .sign-up__block {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            width: max-content;
+
+
+            picture {
+                display: block;
+                width: 2.5rem;
+                height: 2.5rem;
+                flex-shrink: 0;
+                border-radius: 50%;
+                overflow: hidden
+            }
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                display: block;
+                pointer-events: none;
+            }
+
+            & .text-body {
+                color: var(--c-text);
+
+            }
+
+            & .uf__container {
+                position: absolute;
+                left: 0;
+                top: 100%;
+                height: 18.75rem;
+                width: 20rem;
+                z-index: 99;
+                padding: var(--s-mmd);
+                background-color: var(--c-active-one, #fff);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                border-radius: var(--r-md);
+
+                display: none;
+                opacity: 0;
+                transform: translateY(-10px);
+                transition: opacity 0.3s ease, transform 0.3s ease;
+
+                /*USER FORM*/
+                & .ul-form {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--s-sm);
+                    width: 100%;
+
+                    /*LABEL*/
+                    & label {
+                        font: var(--f-heading-sm);
+                    }
+
+                    /*INPUT*/
+                    & input {
+                        padding: var(--s-sm);
+                        border-radius: var(--r-md);
+                        border: none;
+                        outline: none;
+
+                        font: var(--f-body);
+                        color: var(--c-text);
+
+                        /* INPUT FOCUS */
+                        &:focus {
+                            box-shadow: 0 0 0 3px var(--c-active-five);
+                        }
+                    }
+
+                    /*SCORE TEXT*/
+                    & p {
+                        margin: 0;
+                    }
+
+                    /*BUTTON*/
+                    & button {
+                        margin-top: var(--s-sm);
+                        align-self: center;
+                    }
+                }
+            }
+
+            & .open {
+                display: block;
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         & .block-row {
 
-            gap: clamp(1rem, 8vw, 5rem);
+            gap: clamp(1rem, 8vw, 3rem);
         }
 
         & .btn--rounded {
@@ -238,7 +337,7 @@ a {
 
     & .hero__container {
         padding: var(--s-lg) clamp(1rem, 5vw, var(--s-md));
-        background: url('/assests/images/hero-background.webp');
+        background: url('../assests/images/hero-background.webp');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -483,16 +582,16 @@ a {
             & .game-cards__grid {
                 display: flex;
                 flex-wrap: nowrap;
-                width: max-content;      
+                width: max-content;
                 gap: 2rem;
-                margin: var(--s-md) 0;  
+                margin: var(--s-md) 0;
                 align-items: center;
                 will-change: transform;
-                
-               
+
+
 
                 &.no-hover .game-card {
-                    pointer-events: none; 
+                    pointer-events: none;
                 }
 
                 & .game-card {
@@ -509,7 +608,7 @@ a {
                     width: 18rem;
                     flex-shrink: 0;
 
-    
+
                     &:hover {
 
                         transform: translateY(-0.5rem);
@@ -525,21 +624,23 @@ a {
                         display: block;
                         width: 100%;
                         height: 100%;
-                    }
 
-                    & img {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                        display: block;
-                        transition: transform 0.5s ease;
-                        pointer-events: none;
-                        
+                        & img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                            display: block;
+                            transition: transform 0.5s ease;
+                            pointer-events: none;
 
+
+                        }
                     }
                 }
 
-                
+
+
+
 
 
 
