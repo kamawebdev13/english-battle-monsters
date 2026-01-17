@@ -60,13 +60,15 @@
         <div class="game__section">
             <div class="game-btns__block">
                 <div class="circle-btn">
-                    <a href="./index.html" title="circle-btn "><i class="ri-home-smile-fill icon-outline"></i></a>
+                    <a href="./index.html" title="home" target="_blank" rel="noopener noreferrer"><i
+                            class="ri-home-smile-fill icon-outline"></i></a>
                 </div>
                 <div class="circle-btn">
-                    <a id="btn-back" href="javascript:location.reload()" title="go-back"><i class="ri-arrow-left-fill icon-outline"></i></a>
+                    <a id="btn-back" href="javascript:location.reload()" title="go-back"><i
+                            class="ri-arrow-left-fill icon-outline"></i></a>
                 </div>
                 <!---------------------->
-                <!--  GAME AREA-->
+                <!----- GAME AREA------->
             </div>
             <div class="game-area__container">
                 <!--  TEXTO DE NIVEL -->
@@ -96,7 +98,7 @@
                     </div>
 
                 </div>
-                <!---------------------->
+                <!------------END OF GAME SECTION------------------>
 
             </div>
             <!--  TIME BAR-->
@@ -116,49 +118,49 @@
 
             </div>
         </div>
-        <!---------------------->
+        <!----------END OF TIME BAR------------>
 
     </div>
-  <!--------INICIO DE SCRIPT PARA CARGADO DE JUEGO EN EL HTML------>
+    <!--------INICIO DE SCRIPT PARA CARGADO DE JUEGO EN EL HTML------>
     <script src="jsgames/gamesengine.js"></script>
 
     <script>
-        (function() {
-        /*CREAMOS FUNCION PARA CARGAR EL JUEGO ELEGIDO*/
-        function loadGame(configPath) {
-            /*OCULTA EL GAMES MENU Y MUESTRA EL AREA DE JUEGO*/
-            document.getElementById('games-menu').style.display = 'none';
-            document.getElementById('game-wrapper').style.display = 'block';
+        (function () {
+            /*CREAMOS FUNCION PARA CARGAR EL JUEGO ELEGIDO*/
+            function loadGame(configPath) {
+                /*OCULTA EL GAMES MENU Y MUESTRA EL AREA DE JUEGO*/
+                document.getElementById('games-menu').style.display = 'none';
+                document.getElementById('game-wrapper').style.display = 'block';
 
-            /*CREAMOS EL SCRIPT PARA ELEGIR EL JUEGO ELEGIDO*/
-            const script = document.createElement('script');
-            script.src = configPath;
+                /*CREAMOS EL SCRIPT PARA ELEGIR EL JUEGO ELEGIDO*/
+                const script = document.createElement('script');
+                script.src = configPath;
 
-            /*CARGADO DE JUEGO ELEGIDO*/
-            script.onload = () => {
-                console.log("CONFIG LOADED:", configPath);
-                if (typeof initGame === "function") {
-                    initGame();
-                } else {
-                    console.error("Error: initGame NO FOUND IN gamesengine.js");
-                }
-            };
+                /*CARGADO DE JUEGO ELEGIDO*/
+                script.onload = () => {
+                    console.log("CONFIG LOADED:", configPath);
+                    if (typeof initGame === "function") {
+                        initGame();
+                    } else {
+                        console.error("Error: initGame NO FOUND IN gamesengine.js");
+                    }
+                };
 
-            script.onerror = () => {
-                alert("Error: FILE NOT FOUND " + configPath);
-                location.reload();
-            };
+                script.onerror = () => {
+                    alert("Error: FILE NOT FOUND " + configPath);
+                    location.reload();
+                };
 
-            document.body.appendChild(script);
-        }
-        /*===================END OF LOADGAME==================*/
-        
-        window.loadGame = loadGame
+                document.body.appendChild(script);
+            }
+            /*===================END OF LOADGAME==================*/
+
+            window.loadGame = loadGame
         })()
-        
+
     </script>
-/
-<!--------ENDO OF SCRIPT PARA CARGADO DE JUEGO EN EL HTML------>
+    /
+    <!--------ENDO OF SCRIPT PARA CARGADO DE JUEGO EN EL HTML------>
 
 
 </body>
