@@ -18,7 +18,7 @@
         }
     })
 
-    /**FUNCION RENDERIZADO DE FORMULARIO */
+    /**FUNCION RENDERIZADO DE FORMULARIO **/
 
     const renderUserForm = () => {
         let userForm = document.getElementById("user-form")
@@ -119,7 +119,7 @@
     });
 
 
-
+ /*====================END OF EVENTO DE SONIDO ==============================================*/
 
 
     /*CARROUSEL PARA LA SECCION GAME CARDS*/
@@ -260,3 +260,7 @@
     })
 
 })()
+
+ /*====================END OF RESPONSIVE ==============================================*/
+
+
