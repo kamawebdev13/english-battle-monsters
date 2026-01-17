@@ -1,3 +1,7 @@
+
+(function() {
+    console.log("CARGANDO CONFIGURACION (GameData)...");
+
 /* games/prepositionsbattles/config.js*/
 /*ESTE JS ES LA PLANTILLA BASE Y PUEDE EDITARSE PARA CADA JUEGO*/ 
 
@@ -167,6 +171,8 @@ const GameData = {
     }
 }
 
+window.GameData = GameData
 
+})();
 
-
+/*====================END OF CODE======================= */

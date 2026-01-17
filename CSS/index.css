@@ -250,7 +250,7 @@ a {
                 z-index: 99;
                 padding: var(--s-mmd);
                 background-color: var(--c-active-one, #fff);
-                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
                 border-radius: var(--r-md);
 
                 display: none;
@@ -262,6 +262,7 @@ a {
                 & .ul-form {
                     display: flex;
                     flex-direction: column;
+                    align-items: center;
                     gap: var(--s-sm);
                     width: 100%;
 
@@ -280,7 +281,7 @@ a {
                         font: var(--f-body);
                         color: var(--c-text);
 
-                        /* INPUT FOCUS */
+                        /*INPUT FOCUS*/
                         &:focus {
                             box-shadow: 0 0 0 3px var(--c-active-five);
                         }
@@ -293,8 +294,12 @@ a {
 
                     /*BUTTON*/
                     & button {
+                        position: static;
+                        width: fit-content;
+                        margin-left: auto;
+                        margin-right: auto;
                         margin-top: var(--s-sm);
-                        align-self: center;
+
                     }
                 }
             }
@@ -305,6 +310,20 @@ a {
                 transform: translateY(0);
             }
         }
+
+        & .menu-burger {
+            & .ri-menu-line {
+                left: auto;
+                top: 0;
+                color: var(--c-text-two);
+                font: var(--f-heading-md);
+                display: none;
+            }
+
+
+        }
+
+
 
         & .block-row {
 
@@ -342,19 +361,21 @@ a {
         background-position: center;
         background-repeat: no-repeat;
 
-        height: 37.5rem;
-        width: 60.625rem;
+        height: clamp(25rem, 70vh, 38rem);
+        width: 100%;
+        max-width: 60.625rem;
+        margin-inline: auto;
 
 
         & .hero__block {
             width: 100%;
 
             & .hero__title {
-                max-width: 56.25rem;
+                max-width: clamp(15rem, 80vw, 55rem);
                 text-align: center;
 
                 & .hero__logo {
-                    width: 55rem;
+                    width: clamp(15rem, 80vw, 55rem);
                     height: auto;
                     display: block;
                     margin: 0 auto;
@@ -368,7 +389,7 @@ a {
             }
 
             & .text-h1 {
-                margin-top: 20rem;
+                margin-top: clamp(5rem, 15vh, 20rem);
                 font: var(--f-heading-md);
                 text-transform: uppercase;
 
@@ -392,27 +413,37 @@ a {
 
 
         & .banner__block {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            align-items: center;
+            justify-content: center;
 
-            .banner__info {
+
+            & .banner__info {
                 flex: 1 1 25rem;
+                display: flex;
+                flex-direction: column;
 
-                .text-h2 {
+                & .text-h2 {
                     padding: var(--s-sm);
                     color: var(--c-active-five);
                     text-align: left;
                     width: 80%;
+                    font-size: clamp(1.5rem, 4vw + 1rem, 3rem);
                 }
 
-                .text-body {
+                & .text-body {
                     text-align: justify;
                     padding: 0 var(--s-sm);
                     line-height: 2rem;
+                    font-size: clamp(1rem, 2vw, 1.25rem);
 
                 }
 
             }
 
-            .banner__image {
+            & .banner__image {
                 flex: 0 1 22rem;
                 border-radius: var(--r-mmd);
 
@@ -564,6 +595,8 @@ a {
 
 }
 
+/*END OF GRID */
+
 /*GAME CARDS*/
 
 .game-cards {
@@ -575,7 +608,7 @@ a {
             flex-direction: column;
             gap: 1rem;
             width: 100%;
-            padding: var(--s-sm);
+            padding: var(--s-xl);
 
             overflow: hidden;
 
@@ -655,9 +688,80 @@ a {
 
 }
 
+/*FOOTER*/
+
+.footer__container {
+
+    background-color: var(--c-active-one);
+    background: url('../assests/images/bottom-monsters.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    height: auto;
+    min-height: clamp(12rem, 40vw, 18.5rem);
+    max-width: 60.625rem;
+    margin-inline: auto;
+
+
+    align-items: center;
+    justify-content: center;
+    padding: var(--s-sm);
+
+
+
+    & .footer__block {
+
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-bottom: clamp(1rem, 5vw, var(--s-xxl));
+
+
+        & .text-h4 {
+            position: relative;
+            text-shadow: var(--text-shadow);
+            padding: var(--s-md) 0 0 0;
+            top: var(--s-lg);
+            font-size: clamp(0.8rem, 2.5vw, 1.2rem);
+
+
+        }
+
+        & .social-media__block {
+            width: 100%;
+            font: var(--f-heading-sm);
+            text-align: center;
+            padding: 0 0 var(--s-xl) 0;
+            text-align: center;
+            padding: 0 0 var(--s-xl) 0;
+            transition: transform 0.3s ease;
+
+            &:hover {
+                transform: translateY(-0.5rem);
+
+            }
+
+
+
+
+        }
+
+    }
+
+
+
+
+}
+
+
+/*END OF FOOTER*/
 
 
 /*responsive*/
+
+/*NAV*/
 
 @media (max-width: 768px) {
 
@@ -666,11 +770,69 @@ a {
         & .nav__block {
 
             & .nav__main-links {
-
                 display: none;
+
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--c-active-four);
+                flex-direction: column;
+                align-items: center;
+                gap: 32px;
+                padding: 32px 0;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                z-index: 100;
+
+                & a:hover {
+                    cursor: pointer;
+                    color: var(--c-active-three);
+                    transition: color 0.3s ease;
+
+                    & .text-link {
+                        font: var(--f-link-md);
+                        color: var(--c-text-two);
+                    }
+                }
+
+                &.show-main-links {
+                    display: flex;
+
+                }
 
             }
 
+            & .sign-up__block {
+                width: 100%;
+                justify-content: flex-end;
+
+                & .menu-burger {
+                    margin-left: 24px;
+                    padding-left: 16px;
+                    display: block;
+                    cursor: pointer;
+
+                    min-width: 30px;
+                    min-height: 30px;
+
+                    & .ri-menu-line {
+                        display: block;
+                        font-size: 32px;
+                        cursor: pointer;
+                        color: var(--c-text);
+                    }
+                }
+            }
+
+
+
         }
+
+
+
+
+
     }
 }
+
+/*END OF NAV*/

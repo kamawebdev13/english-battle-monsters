@@ -50,10 +50,10 @@ a {
     --c-active-six: #CD5656;
     --c-time-over: #ff4d4d;
     --c-correct-btn: #3cff9e;
-    --c-correct-btntxt:#222;
-    --c-incorrect-btn:#6c0909;
-    --c-incorrect-btntxt:#fff;
-    --c-wrong-text:#ff6b6b;
+    --c-correct-btntxt: #222;
+    --c-incorrect-btn: #6c0909;
+    --c-incorrect-btntxt: #fff;
+    --c-wrong-text: #ff6b6b;
 
 
     --c-hover: #FEEAC9;
@@ -101,7 +101,7 @@ a {
 /*ELEMENTS*/
 
 .icon-outline {
-    
+
     text-shadow: var(--text-shadow);
 }
 
@@ -862,8 +862,9 @@ a {
         }
 
         /*SCORE TEXT*/
-        & p {
+        & .score-label {
             margin: 0;
+            font: var(--c-text)
         }
 
         /*BUTTON*/
@@ -941,19 +942,23 @@ a {
     html {
         height: auto;
         min-height: 100vh;
-        padding: 0.5rem;
+        padding: 8px;
         overflow-x: hidden;
         background-color: var(--c-active-one);
     }
 
     /*MENU PRINCIPAL DE JUEGOS*/
     #games-menu {
-        padding: 3rem;
+        padding: 48px;
         height: 100vh;
         overflow-y: auto;
 
+        & .text-h1 {
+            text-align: center;
+        }
+
         & .menu__grid {
-            gap: 6rem;
+            gap: 96px;
             flex-direction: column;
             align-items: center;
         }
@@ -968,7 +973,7 @@ a {
             flex-direction: column;
             height: 100vh;
             padding: 0;
-            padding-top: 5rem;
+            padding-top: 80px;
             background: transparent;
             overflow: hidden;
 
@@ -977,19 +982,19 @@ a {
             /*REPOSICIONAMOS LOS BOTONES ARRIBA Y EN CADA ESQUINA*/
             & .game-btns__block {
                 position: absolute;
-                top: 0.5rem;
+                top: 8px;
                 left: 0;
                 width: 100%;
-                height: 4rem;
+                height: 64px;
                 flex-direction: row;
                 justify-content: space-between;
-                padding: 0 0.5rem;
+                padding: 0 8px;
                 z-index: 50;
 
                 & .circle-btn {
-                    width: 3rem;
-                    height: 3rem;
-                    font-size: 1.2rem;
+                    width: 48px;
+                    height: 48px;
+                    font-size: 19.2px;
                     padding: 0;
                 }
             }
@@ -997,18 +1002,18 @@ a {
             /*CENTRAMOS BARRA DEL TIEMPO*/
             & .time-bar__block {
                 position: absolute;
-                top: 0.75rem;
+                top: 12px;
                 left: 50%;
                 transform: translateX(-50%);
 
                 width: 40%;
-                height: 2.5rem;
+                height: 40px;
 
                 display: flex;
                 flex-direction: row;
                 align-items: center;
                 justify-content: center;
-                padding: 0.25rem;
+                padding: 4px;
                 z-index: 49;
                 background: var(--c-background-lighter);
                 border: 2px solid var(--c-border);
@@ -1021,7 +1026,7 @@ a {
 
                 & .time-filler__container {
                     width: 100%;
-                    height: 0.8rem;
+                    height: 12.8px;
                     margin: 0;
                     border: 1px solid var(--c-border);
                 }
@@ -1057,10 +1062,10 @@ a {
                     /*PREGUNTAS*/
                     & .questions {
                         min-height: 20%;
-                        padding: 0.5rem;
+                        padding: 8px;
 
                         & .question-image {
-                            height: 5rem;
+                            height: 80px;
 
                             & img {
                                 object-fit: contain;
@@ -1068,19 +1073,19 @@ a {
                         }
 
                         & .text-h3 {
-                            font-size: 0.9rem;
-                            margin: 0.2rem 0;
+                            font-size: 14.4px;
+                            margin: 3.2px 0;
                         }
                     }
 
                     /*BOTONES DE RESPUESTAS*/
                     & .questions-btns {
-                        padding: 0.25rem;
+                        padding: 4px;
 
                         & .btn--rounded {
-                            padding: 0.5rem;
-                            font-size: 0.8rem;
-                            margin-bottom: 0.2rem;
+                            padding: 8px;
+                            font-size: 12.8px;
+                            margin-bottom: 3.2px;
                             width: 100%;
                         }
                     }
@@ -1091,7 +1096,7 @@ a {
                     height: 25vh;
                     min-height: 150px;
                     overflow: visible;
-                    padding: 0 0.5rem 0.5rem 0.5rem;
+                    padding: 0 8px 8px 8px;
 
                     & .monster {
                         width: 5rem;
@@ -1115,34 +1120,33 @@ a {
                     }
 
                     /*BOTONES DE INFO*/
-                    & .monster .btn--rounded {
+                    & .monster 
+                    & .btn--rounded {
                         pointer-events: auto;
                         position: absolute;
-                        bottom: 0;
+                        bottom: 4px;
                         left: 50%;
                         transform: translateX(-50%);
                         z-index: 20;
 
-                        min-width: unset;
-                        width: 90%;
-                        max-width: 100px;
-                        padding: 0.25rem;
-                        font-size: 0.65rem;
+                        min-width: 0;
+                        width: max-content;
+                        max-width: 100%;
+                        padding: 4px 8px;
+                        font: 600 10px/1 'Fredoka', sans-serif;
                         white-space: nowrap;
-                        height: auto;
-
-                        &:hover {
-                            transform: translateX(-50%);
-                        }
+                        border-radius: 4px;
+                        box-shadow: 1px 1px 0 rgba(85, 88, 121, 0.6);
+                     
                     }
 
                     /*UBICACION DE SPRITES*/
                     & .player {
-                        margin-right: 1rem;
+                        margin-right: 16px;
                     }
 
                     & .enemy {
-                        margin-left: 1rem;
+                        margin-left: 16px;
                     }
                 }
             }
@@ -1150,12 +1154,12 @@ a {
 
         /*AJUSTE DE TABLA PUNTAJES*/
         & .score-final {
-            top: 4rem;
+            top: 64px;
             bottom: auto;
             transform: translateX(-50%);
             width: 90%;
             max-height: 50vh;
-            padding: 0.5rem;
+            padding: 8px;
             background-color: rgba(137, 103, 179, 0.95);
             -webkit-backdrop-filter: blur(5px);
             backdrop-filter: blur(5px);
@@ -1164,13 +1168,13 @@ a {
 
         & .score-table th,
         & .score-table td {
-            padding: 0.25rem;
-            font-size: 0.75rem;
+            padding: 4px;
+            font-size: 12px;
 
             &.score-final .text-h2,
             &.score-final h2 {
-                font-size: 1.2rem;
-                margin-bottom: 0.5rem;
+                font-size: 19.2px;
+                margin-bottom: 8px;
             }
 
             & .game__section .game-area__container .bottom {

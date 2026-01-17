@@ -119,10 +119,11 @@
         <!---------------------->
 
     </div>
-
+  <!--------INICIO DE SCRIPT PARA CARGADO DE JUEGO EN EL HTML------>
     <script src="jsgames/gamesengine.js"></script>
 
     <script>
+        (function() {
         /*CREAMOS FUNCION PARA CARGAR EL JUEGO ELEGIDO*/
         function loadGame(configPath) {
             /*OCULTA EL GAMES MENU Y MUESTRA EL AREA DE JUEGO*/
@@ -139,7 +140,7 @@
                 if (typeof initGame === "function") {
                     initGame();
                 } else {
-                    console.error("Error: initGame NO FOUND IN engine.js");
+                    console.error("Error: initGame NO FOUND IN gamesengine.js");
                 }
             };
 
@@ -150,11 +151,14 @@
 
             document.body.appendChild(script);
         }
-
+        /*===================END OF LOADGAME==================*/
+        
+        window.loadGame = loadGame
+        })()
         
     </script>
-
-
+/
+<!--------ENDO OF SCRIPT PARA CARGADO DE JUEGO EN EL HTML------>
 
 
 </body>

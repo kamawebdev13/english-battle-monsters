@@ -1,3 +1,7 @@
+(function() {
+    console.log("CARGANDO CONFIGURACION (GameData)...")
+
+
 /* games/pastsimplebattles/config.js */
 
 const GameData = {
@@ -162,3 +166,8 @@ const GameData = {
         }
     }
 }
+window.GameData = GameData;
+
+})();
+
+/*====================END OF CODE======================= */

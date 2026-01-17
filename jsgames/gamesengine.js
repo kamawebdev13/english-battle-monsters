@@ -1,5 +1,10 @@
 
-/*ESTE ES EL MOTOR DEL JUEGO  Y SE CARGA EN LA PAGINA PRINCIPAL GAMES, ESTE A SU VEZ DESCARGARA LAS PLANTILLAS CONFIG.JS*/
+(function() {
+    console.log("CARGANDO JUEGO EN IIFE...")
+
+
+/*ESTE ES EL MOTOR DEL JUEGO  Y SE CARGA EN LA PAGINA PRINCIPAL GAMES, ESTE A SU VEZ DESCARGARA 
+LAS PLANTILLAS CONFIG.JS*/
 
 /*VARIABLES GLOBALES DEL JUEGO*/
 
@@ -464,8 +469,8 @@ const handleTimeOver = () => {
 /***INICIO FUNCION DE ACTUALIZACION DE ESTADOS DE LOS SPRITES/MONSTRUOS***/
 
 const updateMonster = (who, mood) => {
-  /*LOGICA DE LOS PARAM: WHO: 'PLAYER' | 'ENEMY'*/
-  /*LOGICA DE LOS PARAM  MOOD: 'WIN' | 'LOSE'*/
+  /*LOGICA DE LOS PARAMETROS: WHO: 'PLAYER' | 'ENEMY'*/
+  /*LOGICA DE LOS PARAMETROS  MOOD: 'WIN' | 'LOSE'*/
 
   /*DECLARAMOS LAS VARIABLES DE PUNTOS, IMAGENES Y ACCESO DE LA DATA DE PLANTILLA CONFIG.JS*/
   const targetObj = gameState.scores[who]
@@ -596,7 +601,7 @@ const finishGame = () => {
 const showScoreForm = () => {
   const topDiv = dom.gameBlock.querySelector(".top")
 
-  topDiv.style.height = "100%"     
+  topDiv.style.height = "100%"     /*ESTO ACA ES PARA EVITAR SE DESAPAREZCA EL TABLERO DE PUNTAJE*/
   topDiv.style.opacity = "1"       
   topDiv.style.position = "relative"
   topDiv.style.transform = "none"  
@@ -607,9 +612,9 @@ const showScoreForm = () => {
         <div class="score-board">
             <h2 class="text-h2">Hall of Fame</h2>
             <p>Game: ${GameData.title}</p>
-            <form id="score-form" class="score-form">
+            <form id="score-form" class="score-form" action="/save-score" method="POST">
                 <input type="text" id="player-name" placeholder="Your Name" maxlength="12" required>
-                <p>Score: <strong>${gameState.scores.player.points}</strong></p>
+                <label class="score-label">Score: <strong>${gameState.scores.player.points}</strong></label>
                 <button type="submit" class="btn--rounded">Submit</button>
             </form>
             <div id="high-scores-list"></div>
@@ -629,7 +634,8 @@ const showScoreForm = () => {
 /***INICIO FUNCION DE TABLERO DE PUNTAJES***/
 const loadHighScores = () => {
   const key = GameData.gameId /*CLAVE ÚNICA DEL JUEGO*/
-  const saved = JSON.parse(localStorage.getItem(key)) || []
+  const saved = JSON.parse(localStorage.getItem(key)) || [] /*EXTRAEMOS CON KEY LA DATA GUARDADA 
+  DE FUNCION SAVESCORE*/ 
   const listDiv = document.getElementById("high-scores-list")
 
   /*ORDENAMOS Y GUARDAMOS LOS CINCO PRIMEROS PUNTAJES MAS ALTOS*/
@@ -680,6 +686,8 @@ const saveScore = () => {
 /*=====END OF SAVESCORE()===================*/
 
 
-
-
 /*===========END OF THE CODE==========*/
+
+window.initGame = initGame
+
+})()

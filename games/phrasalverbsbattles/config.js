@@ -1,3 +1,7 @@
+(function() {
+    console.log("CARGANDO CONFIGURACION (GameData)...")
+
+
 /* games/phrasalverbsbattles/config.js */
 
 const GameData = {
@@ -159,3 +163,9 @@ const GameData = {
         }
     }
 }
+
+window.GameData = GameData;
+
+})();
+
+/*====================END OF CODE======================= */
